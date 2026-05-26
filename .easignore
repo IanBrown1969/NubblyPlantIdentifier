@@ -1,0 +1,14 @@
+# Exclude heavy local folders and caches from being uploaded to EAS servers
+node_modules/
+.expo/
+android/
+ios/
+.gradle/
+build/
+android/build/
+ios/build/
+*.log
+scripts/
+*.md
+docs/
+temp/
