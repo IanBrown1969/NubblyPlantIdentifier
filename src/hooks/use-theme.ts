@@ -5,10 +5,22 @@
 
 import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAuth } from '@/context/AuthContext';
 
 export function useTheme() {
   const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
+
+  try {
+    const auth = useAuth();
+    if (auth && auth.theme) {
+      return auth.theme;
+    }
+  } catch {
+    // Fallback if called outside AuthProvider
+  }
+
+  const theme = scheme === 'unspecified' || !scheme ? 'dark' : scheme;
 
   return Colors[theme];
 }
+

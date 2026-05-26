@@ -1,13 +1,55 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import { useColorScheme } from 'react-native';
+import { ActivityIndicator, View } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+import { initDatabase } from '../models/Database';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import { useAuthController } from '../controllers/useAuthController';
+import { LoginView } from '../views/screens/LoginView';
+
+// Initialize the SQLite tables synchronously on app load
+initDatabase();
+
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}
+
+function AppContent() {
+  const { loading, isAuthenticated, themeMode } = useAuth();
+  const authController = useAuthController();
+
+  // If loading SecureStore keys, show a simple spinner
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#0b0e0c' }}>
+        <ActivityIndicator size="large" color="#10b981" />
+      </View>
+    );
+  }
+
+  // Gatekeeper: if not authenticated, strictly overlay the frosted lock screen
+  if (!isAuthenticated) {
+    return (
+      <LoginView
+        onLoginWithBiometrics={authController.onLoginWithBiometrics}
+        onLoginWithGoogle={authController.onLoginWithGoogle}
+        isAuthenticating={authController.isAuthenticating}
+        hasBiometrics={authController.hasBiometrics}
+        authError={authController.authError}
+        onClearError={authController.onClearError}
+      />
+    );
+  }
+
+  // App is unlocked: render splash and tab routing shell
+  return (
+    <ThemeProvider value={themeMode === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
       <AppTabs />
     </ThemeProvider>

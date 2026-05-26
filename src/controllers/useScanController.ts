@@ -1,0 +1,237 @@
+import { useState, useCallback } from 'react';
+import * as ImagePicker from 'expo-image-picker';
+import { useAuth } from '../context/AuthContext';
+import { ClaudeService } from '../services/ClaudeService';
+import { LocationService } from '../services/LocationService';
+import { FileSystemService } from '../services/FileSystemService';
+import { GardenModel, GardenItem } from '../models/GardenModel';
+
+export type ScanStatus = 'idle' | 'capturing' | 'gps' | 'uploading' | 'analyzing' | 'saving' | 'success' | 'error';
+
+export function useScanController() {
+  const { isPremiumAccess, claudeApiKey } = useAuth();
+  
+  const [status, setStatus] = useState<ScanStatus>('idle');
+  const [scanMode, setScanMode] = useState<'identity' | 'diagnosis'>('identity');
+  const [telemetryMessage, setTelemetryMessage] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [scannedResult, setScannedResult] = useState<GardenItem | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [scanError, setScanError] = useState<string | null>(null);
+
+  /**
+   * Safe telemetry visual logger.
+   */
+  const updateTelemetry = (msg: string, currentProgress: number) => {
+    setTelemetryMessage(msg);
+    setProgress(currentProgress);
+    console.log(`[ScanController] HUD: ${msg} (${Math.round(currentProgress * 100)}%)`);
+  };
+
+  /**
+   * Resets active scanner parameters.
+   */
+  const onResetScanner = useCallback(() => {
+    setStatus('idle');
+    setTelemetryMessage('');
+    setProgress(0);
+    setScannedResult(null);
+    setScanError(null);
+  }, []);
+
+  /**
+   * Master execution flow for plant diagnostic scans.
+   */
+  const executeScanFlow = async (imageUri: string, base64Data: string | undefined) => {
+    setScanError(null);
+    try {
+      // 1. GPS Acquisition
+      updateTelemetry('Acquiring high-precision GPS discovery coordinates...', 0.15);
+      setStatus('gps');
+      const location = await LocationService.getCurrentLocation();
+      const placeName = location?.placeName || 'Unknown Location';
+
+      // 2. Transmitting visual assets to AI service
+      updateTelemetry('Opening secure socket connection to Claude AI...', 0.35);
+      setStatus('uploading');
+      
+      updateTelemetry('Analyzing foliage cellular margins & visual taxonomy...', 0.60);
+      setStatus('analyzing');
+      
+      // If we don't have base64 (e.g. mock selections), identifyPlant automatically triggers simulation
+      const claudeProfile = await ClaudeService.identifyPlant(
+        base64Data || '',
+        'image/jpeg',
+        claudeApiKey,
+        scanMode
+      );
+
+      // 3. Saving & relational mapping inside local database
+      updateTelemetry('Writing records to SQLite relational database...', 0.85);
+      setStatus('saving');
+
+      const uniqueId = `plant_${Date.now()}`;
+      
+      // Copy image asset from volatile temporary folders to permanent Document sandbox
+      const permanentPhotoUri = await FileSystemService.savePhotoPermanently(imageUri, uniqueId);
+
+      const newGardenItem: GardenItem = {
+        id: uniqueId,
+        customName: `My ${claudeProfile.commonName}`,
+        dateAdded: new Date().toISOString(),
+        lastWatered: new Date().toISOString(),
+        ...claudeProfile,
+        photoUri: permanentPhotoUri,
+        discoveryLocation: location ? {
+          latitude: location.latitude,
+          longitude: location.longitude,
+          placeName,
+        } : undefined
+      };
+
+      // Write directly to SQLite database sync
+      const dbSuccess = GardenModel.saveItem(newGardenItem);
+      if (!dbSuccess) {
+        throw new Error('Failed to commit plant care record to SQLite database.');
+      }
+
+      // Success state
+      setScannedResult(newGardenItem);
+      updateTelemetry('Foliage analysis complete! Match saved in library.', 1.0);
+      setStatus('success');
+    } catch (e: any) {
+      console.error('[ScanController] Critical scan sequence failure:', e);
+      setScanError(e.message || 'Foliage analysis failed.');
+      setStatus('error');
+    }
+  };
+
+  /**
+   * Handler to capture a fresh high-resolution photo using the device camera.
+   */
+  const onCapturePhoto = async (): Promise<void> => {
+    console.log('[ScanController] Handled request: Launch Device Camera');
+    
+    // Gating check: if free tier user, block scanner and prompt paywall sheet
+    if (!isPremiumAccess) {
+      setShowPaywall(true);
+      return;
+    }
+
+    try {
+      const { granted } = await ImagePicker.requestCameraPermissionsAsync();
+      if (!granted) {
+        setScanError('Camera access scope permissions are required.');
+        setStatus('error');
+        return;
+      }
+
+      setStatus('capturing');
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+        base64: true,
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        setStatus('idle');
+        return;
+      }
+
+      const asset = result.assets[0];
+      await executeScanFlow(asset.uri, asset.base64 || undefined);
+    } catch (err: any) {
+      setScanError(err.message || 'Failed to capture photo.');
+      setStatus('error');
+    }
+  };
+
+  /**
+   * Handler to select an image from the photo library.
+   */
+  const onChoosePhoto = async (): Promise<void> => {
+    console.log('[ScanController] Handled request: Launch Photo Picker');
+    
+    // Gating check
+    if (!isPremiumAccess) {
+      setShowPaywall(true);
+      return;
+    }
+
+    try {
+      const { granted } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!granted) {
+        setScanError('Photo library access permissions are required.');
+        setStatus('error');
+        return;
+      }
+
+      setStatus('capturing');
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.8,
+        base64: true,
+      });
+
+      if (result.canceled || !result.assets || result.assets.length === 0) {
+        setStatus('idle');
+        return;
+      }
+
+      const asset = result.assets[0];
+      await executeScanFlow(asset.uri, asset.base64 || undefined);
+    } catch (err: any) {
+      setScanError(err.message || 'Failed to pick photo.');
+      setStatus('error');
+    }
+  };
+
+  /**
+   * Bypass pipeline for quick developer testing inside Xcode/Android Simulators.
+   * Simulates scanning one of three beautiful preloaded plants.
+   */
+  const onTriggerSimulatedScan = async (plantType: 'fiddle' | 'jade' | 'fern') => {
+    console.log(`[ScanController] Handled developer bypass scan: ${plantType}`);
+    
+    if (!isPremiumAccess) {
+      setShowPaywall(true);
+      return;
+    }
+
+    setStatus('capturing');
+    updateTelemetry('Simulating lens alignment & focal lock...', 0.05);
+    
+    // Custom mock photo URI assets corresponding to selections
+    const mockUris = {
+      fiddle: 'https://images.unsplash.com/photo-1592150621744-aca64f48394a?q=80&w=600&auto=format&fit=crop',
+      jade: 'https://images.unsplash.com/photo-1596547609652-9cf5d8d76921?q=80&w=600&auto=format&fit=crop',
+      fern: 'https://images.unsplash.com/photo-1572688484438-313a6e50c333?q=80&w=600&auto=format&fit=crop',
+    };
+
+    const targetUri = mockUris[plantType];
+    await executeScanFlow(targetUri, undefined); // Bypasses base64 to force simulated botanical profiles
+  };
+
+  return {
+    // Model state outputs
+    status,
+    scanMode,
+    progress,
+    telemetryMessage,
+    scannedResult,
+    showPaywall,
+    scanError,
+
+    // Controller action handlers
+    setScanMode,
+    onCapturePhoto,
+    onChoosePhoto,
+    onTriggerSimulatedScan,
+    onResetScanner,
+    onDismissPaywall: () => setShowPaywall(false),
+  };
+}
+
+export type ScanControllerType = ReturnType<typeof useScanController>;
