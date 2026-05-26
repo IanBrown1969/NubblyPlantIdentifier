@@ -93,7 +93,7 @@ export function PlantDetailView({
         setProgressPhotoUri(result.assets[0].uri);
       }
     } catch (e) {
-      console.warn('[PlantDetailView] Error picking progress photo:', e);
+      console.log('[PlantDetailView] Error picking progress photo:', e);
     }
   };
 
@@ -125,7 +125,11 @@ export function PlantDetailView({
         
         {/* Back Button */}
         <Pressable onPress={onBack} style={[styles.backBtn, { backgroundColor: 'rgba(11, 14, 12, 0.5)' }]}>
-          <SymbolView name="chevron.left" size={16} tintColor="#fff" />
+          <SymbolView
+            name={{ ios: 'chevron.left', android: 'arrow_back', web: 'arrow_back' }}
+            size={16}
+            tintColor="#fff"
+          />
         </Pressable>
 
         {/* Floating Common & Botanical titles inside Overlay */}
@@ -144,7 +148,11 @@ export function PlantDetailView({
         {isSavedInGarden && p.healthStatus === 'Diseased' && (
           <GlassCard style={[styles.clinicCard, { borderColor: 'rgba(239, 68, 68, 0.35)' }]}>
             <View style={styles.clinicHeader}>
-              <SymbolView name="medical.thermometer.fill" size={18} tintColor={theme.danger} />
+              <SymbolView
+                name={{ ios: 'medical.thermometer.fill', android: 'medical_services', web: 'medical_services' }}
+                size={18}
+                tintColor={theme.danger}
+              />
               <Text style={[styles.clinicTitle, { color: theme.danger }]}>🩺 AI Doctor Symptoms Diagnosis</Text>
             </View>
             <View style={styles.clinicBadgeRow}>
@@ -195,14 +203,22 @@ export function PlantDetailView({
         <View style={styles.metricsGrid}>
           {/* Water Interval */}
           <GlassCard style={styles.metricItem}>
-            <SymbolView name="drop.fill" size={16} tintColor={theme.primary} />
+            <SymbolView
+              name={{ ios: 'drop.fill', android: 'water_drop', web: 'water_drop' }}
+              size={16}
+              tintColor={theme.primary}
+            />
             <Text style={[styles.metricLabel, { color: theme.textSecondary }]}>WATERING</Text>
             <Text style={[styles.metricValue, { color: theme.text }]}>Every {p.waterIntervalDays}d</Text>
           </GlassCard>
 
           {/* Sunlight Need */}
           <GlassCard style={styles.metricItem}>
-            <SymbolView name="sun.max.fill" size={16} tintColor="#F59E0B" />
+            <SymbolView
+              name={{ ios: 'sun.max.fill', android: 'wb_sunny', web: 'wb_sunny' }}
+              size={16}
+              tintColor="#F59E0B"
+            />
             <Text style={[styles.metricLabel, { color: theme.textSecondary }]}>SUNLIGHT</Text>
             <Text style={[styles.metricValue, { color: theme.text }]} numberOfLines={1}>
               {p.sunlight.split(' ').slice(0, 2).join(' ')}
@@ -212,7 +228,11 @@ export function PlantDetailView({
           {/* Pet Safety Status */}
           <GlassCard style={styles.metricItem}>
             <SymbolView
-              name={isPetSafe ? 'checkmark.shield.fill' : 'exclamationmark.shield.fill'}
+              name={{
+                ios: isPetSafe ? 'checkmark.shield.fill' : 'exclamationmark.shield.fill',
+                android: isPetSafe ? 'security' : 'gpp_maybe',
+                web: isPetSafe ? 'security' : 'gpp_maybe',
+              }}
               size={16}
               tintColor={isPetSafe ? theme.success : theme.danger}
             />
@@ -227,7 +247,11 @@ export function PlantDetailView({
         {castGardenItem?.discoveryLocation && (
           <GlassCard style={styles.locationCard}>
             <View style={styles.locationHeader}>
-              <SymbolView name="mappin.circle.fill" size={16} tintColor={theme.primary} />
+              <SymbolView
+                name={{ ios: 'mappin.circle.fill', android: 'place', web: 'place' }}
+                size={16}
+                tintColor={theme.primary}
+              />
               <Text style={[styles.locationTitle, { color: theme.text }]}>Scan Location Metadata</Text>
             </View>
             <Text style={[styles.locationName, { color: theme.textSecondary }]}>
@@ -246,7 +270,11 @@ export function PlantDetailView({
         {isSavedInGarden && (
           <GlassCard style={styles.journalCard}>
             <View style={styles.journalHeader}>
-              <SymbolView name="camera.filters" size={16} tintColor={theme.primary} />
+              <SymbolView
+                name={{ ios: 'camera.filters', android: 'photo_library', web: 'photo_library' }}
+                size={16}
+                tintColor={theme.primary}
+              />
               <Text style={[styles.journalHeaderTitle, { color: theme.text }]}>Foliage Photo Journal</Text>
             </View>
             <Text style={[styles.journalSubText, { color: theme.textSecondary }]}>
@@ -270,7 +298,11 @@ export function PlantDetailView({
                   {progressPhotoUri ? (
                     <Image source={{ uri: progressPhotoUri }} style={styles.journalPicThumbnail} />
                   ) : (
-                    <SymbolView name="photo.fill" size={12} tintColor={theme.primary} />
+                    <SymbolView
+                      name={{ ios: 'photo.fill', android: 'image', web: 'image' }}
+                      size={12}
+                      tintColor={theme.primary}
+                    />
                   )}
                   <Text style={[styles.journalPicBtnText, { color: theme.text }]} numberOfLines={1}>
                     {progressPhotoUri ? 'Photo Picked' : 'Pick Photo'}
@@ -289,7 +321,11 @@ export function PlantDetailView({
                     <ActivityIndicator size="small" color={themeMode === 'dark' ? '#070c09' : '#ffffff'} />
                   ) : (
                     <>
-                      <SymbolView name="plus.circle.fill" size={12} tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'} />
+                      <SymbolView
+                        name={{ ios: 'plus.circle.fill', android: 'add_circle', web: 'add_circle' }}
+                        size={12}
+                        tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'}
+                      />
                       <Text style={[styles.journalSaveBtnText, { color: themeMode === 'dark' ? '#070c09' : '#ffffff' }]}>Save Entry</Text>
                     </>
                   )}
@@ -324,7 +360,11 @@ export function PlantDetailView({
               </ScrollView>
             ) : (
               <View style={[styles.emptyJournalBox, { backgroundColor: theme.backgroundElement }]}>
-                <SymbolView name="photo.on.rectangle.angled" size={24} tintColor={theme.textSecondary} />
+                <SymbolView
+                  name={{ ios: 'photo.on.rectangle.angled', android: 'collections', web: 'collections' }}
+                  size={24}
+                  tintColor={theme.textSecondary}
+                />
                 <Text style={[styles.emptyJournalText, { color: theme.textSecondary }]}>
                   {"Your journal is empty. Select a photo to begin mapping your plant's progress timeline!"}
                 </Text>
@@ -344,7 +384,11 @@ export function PlantDetailView({
               ]}
               onPress={onWaterPlant}
             >
-              <SymbolView name="drop.fill" size={16} tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'} />
+              <SymbolView
+                name={{ ios: 'drop.fill', android: 'water_drop', web: 'water_drop' }}
+                size={16}
+                tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'}
+              />
               <Text style={[styles.waterBtnText, { color: themeMode === 'dark' ? '#070c09' : '#ffffff' }]}>Record Watering Log</Text>
             </Pressable>
 
@@ -362,7 +406,11 @@ export function PlantDetailView({
                   });
                   return (
                     <View key={index} style={styles.historyRow}>
-                      <SymbolView name="clock.fill" size={11} tintColor={theme.textSecondary} />
+                      <SymbolView
+                        name={{ ios: 'clock.fill', android: 'schedule', web: 'schedule' }}
+                        size={11}
+                        tintColor={theme.textSecondary}
+                      />
                       <Text style={[styles.historyLogLabel, { color: theme.textSecondary }]}>
                         Event recorded on {formattedDate}
                       </Text>
@@ -377,7 +425,11 @@ export function PlantDetailView({
               style={({ pressed }) => [styles.deleteBtn, pressed && styles.pressed]}
               onPress={onDeleteFromGarden}
             >
-              <SymbolView name="trash.fill" size={14} tintColor={theme.danger} />
+              <SymbolView
+                name={{ ios: 'trash.fill', android: 'delete', web: 'delete' }}
+                size={14}
+                tintColor={theme.danger}
+              />
               <Text style={[styles.deleteBtnText, { color: theme.danger }]}>Delete from My Garden</Text>
             </Pressable>
           </View>
@@ -424,7 +476,11 @@ export function PlantDetailView({
           <Pressable style={styles.accordionHeader} onPress={() => toggleSection('care')}>
             <Text style={[styles.accordionTitle, { color: theme.text }]}>Water & Sunlight Handbooks</Text>
             <SymbolView
-              name={expandedSection === 'care' ? 'chevron.up' : 'chevron.down'}
+              name={{
+                ios: expandedSection === 'care' ? 'chevron.up' : 'chevron.down',
+                android: expandedSection === 'care' ? 'chevron_up' : 'chevron_down',
+                web: expandedSection === 'care' ? 'chevron_up' : 'chevron_down',
+              }}
               size={12}
               tintColor={theme.text}
             />
@@ -447,7 +503,11 @@ export function PlantDetailView({
           <Pressable style={styles.accordionHeader} onPress={() => toggleSection('soil')}>
             <Text style={[styles.accordionTitle, { color: theme.text }]}>Soil Formulas & Fertilizers</Text>
             <SymbolView
-              name={expandedSection === 'soil' ? 'chevron.up' : 'chevron.down'}
+              name={{
+                ios: expandedSection === 'soil' ? 'chevron.up' : 'chevron.down',
+                android: expandedSection === 'soil' ? 'chevron_up' : 'chevron_down',
+                web: expandedSection === 'soil' ? 'chevron_up' : 'chevron_down',
+              }}
               size={12}
               tintColor={theme.text}
             />
@@ -470,7 +530,11 @@ export function PlantDetailView({
           <Pressable style={styles.accordionHeader} onPress={() => toggleSection('troubleshoot')}>
             <Text style={[styles.accordionTitle, { color: theme.text }]}>Foliage Troubleshooting Clinic</Text>
             <SymbolView
-              name={expandedSection === 'troubleshoot' ? 'chevron.up' : 'chevron.down'}
+              name={{
+                ios: expandedSection === 'troubleshoot' ? 'chevron.up' : 'chevron.down',
+                android: expandedSection === 'troubleshoot' ? 'chevron_up' : 'chevron_down',
+                web: expandedSection === 'troubleshoot' ? 'chevron_up' : 'chevron_down',
+              }}
               size={12}
               tintColor={theme.text}
             />

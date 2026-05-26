@@ -72,7 +72,11 @@ export function ExploreView({
       {/* Search Header Banner */}
       <View style={styles.searchHeader}>
         <View style={[styles.searchBar, { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder }]}>
-          <SymbolView name="magnifyingglass" size={16} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'magnifyingglass', android: 'search', web: 'search' }}
+            size={16}
+            tintColor={theme.textSecondary}
+          />
           <TextInput
             style={[styles.searchInput, { color: theme.text }]}
             placeholder="Search botanical or common names..."
@@ -118,7 +122,11 @@ export function ExploreView({
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: BottomTabInset + Spacing.four }]}>
         {filteredPlants.length === 0 ? (
           <View style={styles.noResults}>
-            <SymbolView name="leaf.arrow.triangle.circlepath" size={48} tintColor={theme.textSecondary} />
+            <SymbolView
+              name={{ ios: 'leaf.arrow.triangle.circlepath', android: 'autorenew', web: 'autorenew' }}
+              size={48}
+              tintColor={theme.textSecondary}
+            />
             <Text style={[styles.noResultsTitle, { color: theme.text }]}>No Matches Found</Text>
             <Text style={[styles.noResultsDesc, { color: theme.textSecondary }]}>
               Try adjusting your query or resetting category filters to browse all catalog items.
@@ -135,66 +143,84 @@ export function ExploreView({
             {filteredPlants.map(plant => {
               const isInWishlist = wishlistIds.includes(plant.id);
               return (
-                <GlassCard key={plant.id} style={styles.plantCard}>
-                  {/* Left: Pressable navigation area */}
-                  <Pressable
-                    style={styles.cardNavTouch}
-                    onPress={() => router.push({ pathname: '/plant/[id]', params: { id: plant.id } })}
-                  >
-                    <Image source={{ uri: plant.photoUri }} style={styles.image} contentFit="cover" />
+                <Pressable
+                  key={plant.id}
+                  style={({ pressed }) => [pressed && styles.pressed]}
+                  onPress={() => router.push(`/plant/${plant.id}`)}
+                >
+                  <GlassCard style={styles.plantCard}>
+                    {/* Left: Pressable navigation area (represented as View since parent card is now pressable) */}
+                    <View style={styles.cardNavTouch}>
+                      <Image source={{ uri: plant.photoUri }} style={styles.image} contentFit="cover" />
 
-                    <View style={styles.info}>
-                      <View style={styles.titles}>
-                        <Text style={[styles.commonName, { color: theme.text }]} numberOfLines={1}>
-                          {plant.commonName}
-                        </Text>
-                        <Text style={[styles.botanicalName, { color: theme.textSecondary }]} numberOfLines={1}>
-                          {plant.botanicalName}
-                        </Text>
-                      </View>
-
-                      {/* Small Quick Badges Grid */}
-                      <View style={styles.badges}>
-                        {/* Water Badge */}
-                        <View style={[styles.badge, { backgroundColor: theme.backgroundElement }]}>
-                          <SymbolView name="drop.fill" size={8} tintColor={theme.primary} />
-                          <Text style={[styles.badgeLabel, { color: theme.text }]}>{plant.waterIntervalDays}d</Text>
+                      <View style={styles.info}>
+                        <View style={styles.titles}>
+                          <Text style={[styles.commonName, { color: theme.text }]} numberOfLines={1}>
+                            {plant.commonName}
+                          </Text>
+                          <Text style={[styles.botanicalName, { color: theme.textSecondary }]} numberOfLines={1}>
+                            {plant.botanicalName}
+                          </Text>
                         </View>
 
-                        {/* Pet Safety Badge */}
-                        <View
-                          style={[
-                            styles.badge,
-                            {
-                              backgroundColor: plant.isPetSafe ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.08)',
-                            },
-                          ]}
-                        >
-                          <SymbolView
-                            name={plant.isPetSafe ? 'checkmark.circle.fill' : 'exclamationmark.circle.fill'}
-                            size={8}
-                            tintColor={plant.isPetSafe ? theme.success : theme.danger}
-                          />
-                          <Text style={[styles.badgeLabel, { color: plant.isPetSafe ? theme.success : theme.danger }]}>
-                            {plant.isPetSafe ? 'Safe' : 'Toxic'}
-                          </Text>
+                        {/* Small Quick Badges Grid */}
+                        <View style={styles.badges}>
+                          {/* Water Badge */}
+                          <View style={[styles.badge, { backgroundColor: theme.backgroundElement }]}>
+                            <SymbolView
+                              name={{ ios: 'drop.fill', android: 'water_drop', web: 'water_drop' }}
+                              size={8}
+                              tintColor={theme.primary}
+                            />
+                            <Text style={[styles.badgeLabel, { color: theme.text }]}>{plant.waterIntervalDays}d</Text>
+                          </View>
+
+                          {/* Pet Safety Badge */}
+                          <View
+                            style={[
+                              styles.badge,
+                              {
+                                backgroundColor: plant.isPetSafe ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.08)',
+                              },
+                            ]}
+                          >
+                            <SymbolView
+                              name={{
+                                ios: plant.isPetSafe ? 'checkmark.circle.fill' : 'exclamationmark.circle.fill',
+                                android: plant.isPetSafe ? 'check_circle' : 'error',
+                                web: plant.isPetSafe ? 'check_circle' : 'error',
+                              }}
+                              size={8}
+                              tintColor={plant.isPetSafe ? theme.success : theme.danger}
+                            />
+                            <Text style={[styles.badgeLabel, { color: plant.isPetSafe ? theme.success : theme.danger }]}>
+                              {plant.isPetSafe ? 'Safe' : 'Toxic'}
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
-                  </Pressable>
 
-                  {/* Right: Wishlist Star Button */}
-                  <Pressable
-                    style={({ pressed }) => [styles.wishlistStarBtn, pressed && styles.pressed]}
-                    onPress={() => onToggleWishlist(plant)}
-                  >
-                    <SymbolView
-                      name={isInWishlist ? 'star.fill' : 'star'}
-                      size={18}
-                      tintColor={isInWishlist ? '#F59E0B' : theme.textSecondary}
-                    />
-                  </Pressable>
-                </GlassCard>
+                    {/* Right: Wishlist Star Button */}
+                    <Pressable
+                      style={({ pressed }) => [styles.wishlistStarBtn, pressed && styles.pressed]}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        onToggleWishlist(plant);
+                      }}
+                    >
+                      <SymbolView
+                        name={{
+                          ios: isInWishlist ? 'star.fill' : 'star',
+                          android: isInWishlist ? 'star' : 'star_border',
+                          web: isInWishlist ? 'star' : 'star_border',
+                        }}
+                        size={18}
+                        tintColor={isInWishlist ? '#F59E0B' : theme.textSecondary}
+                      />
+                    </Pressable>
+                  </GlassCard>
+                </Pressable>
               );
             })}
           </View>

@@ -68,7 +68,11 @@ export function HomeView({
         <View style={styles.weatherRow}>
           <View style={styles.weatherLeftCol}>
             <SymbolView
-              name={weather.frostAlert ? 'thermometer.snowflake' : 'sun.max.fill'}
+              name={{
+                ios: weather.frostAlert ? 'thermometer.snowflake' : 'sun.max.fill',
+                android: weather.frostAlert ? 'ac_unit' : 'wb_sunny',
+                web: weather.frostAlert ? 'ac_unit' : 'wb_sunny',
+              }}
               size={20}
               tintColor={weather.frostAlert ? '#3B82F6' : '#F59E0B'}
             />
@@ -83,7 +87,11 @@ export function HomeView({
           </View>
 
           <View style={styles.weatherRightCol}>
-            <SymbolView name="mappin.circle.fill" size={10} tintColor={theme.primary} />
+            <SymbolView
+              name={{ ios: 'mappin.circle.fill', android: 'place', web: 'place' }}
+              size={10}
+              tintColor={theme.primary}
+            />
             <Text style={[styles.weatherLocationText, { color: theme.text }]} numberOfLines={1}>
               {weather.placeName}
             </Text>
@@ -93,7 +101,11 @@ export function HomeView({
         {/* Premium Frost Warning Message */}
         {weather.frostAlert && (
           <View style={[styles.weatherWarningAlert, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>
-            <SymbolView name="exclamationmark.triangle.fill" size={11} tintColor="#3B82F6" />
+            <SymbolView
+              name={{ ios: 'exclamationmark.triangle.fill', android: 'warning', web: 'warning' }}
+              size={11}
+              tintColor="#3B82F6"
+            />
             <Text style={styles.weatherWarningText}>
               Frost Alert! Cold fronts detected. Safeguard outdoor potted items.
             </Text>
@@ -109,7 +121,7 @@ export function HomeView({
     return (
       <Pressable
         style={({ pressed }) => [pressed && styles.pressed]}
-        onPress={() => router.push({ pathname: '/plant/[id]', params: { id: stats.nextCareItemId } })}
+        onPress={() => router.push(`/plant/${stats.nextCareItemId}`)}
       >
         <GlassCard
           style={[
@@ -164,16 +176,27 @@ export function HomeView({
             { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder },
             pressed && styles.pressed
           ]}
-          onPress={() => router.push('/planner')}
+          onPress={() => {
+            console.log('[HomeView] Touch Registered: Bed Grid Planner pressed');
+            router.push('/planner');
+          }}
         >
           <View style={[styles.toolIconBox, { backgroundColor: 'rgba(16, 185, 129, 0.12)' }]}>
-            <SymbolView name="square.grid.3x3.fill" size={16} tintColor={theme.primary} />
+            <SymbolView
+              name={{ ios: 'square.grid.3x3.fill', android: 'grid_view', web: 'grid_view' }}
+              size={16}
+              tintColor={theme.primary}
+            />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={[styles.toolTitleText, { color: theme.text }]}>Bed Grid Planner</Text>
             <Text style={[styles.toolDescText, { color: theme.textSecondary }]}>Layout grid & check companions</Text>
           </View>
-          <SymbolView name="chevron.right" size={12} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
+            size={12}
+            tintColor={theme.textSecondary}
+          />
         </Pressable>
 
         {/* Wishlist Widget */}
@@ -183,27 +206,41 @@ export function HomeView({
             { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder },
             pressed && styles.pressed
           ]}
-          onPress={() => router.push('/wishlist')}
+          onPress={() => {
+            console.log('[HomeView] Touch Registered: Nurseries Wishlist pressed');
+            router.push('/wishlist');
+          }}
         >
           <View style={[styles.toolIconBox, { backgroundColor: 'rgba(245, 158, 11, 0.12)' }]}>
-            <SymbolView name="star.fill" size={16} tintColor="#F59E0B" />
+            <SymbolView
+              name={{ ios: 'star.fill', android: 'star', web: 'star' }}
+              size={16}
+              tintColor="#F59E0B"
+            />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={[styles.toolTitleText, { color: theme.text }]}>Nurseries Wishlist</Text>
             <Text style={[styles.toolDescText, { color: theme.textSecondary }]}>Checklists & seed collection</Text>
           </View>
-          <SymbolView name="chevron.right" size={12} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}
+            size={12}
+            tintColor={theme.textSecondary}
+          />
         </Pressable>
       </View>
     );
   };
-
   // Render garden plant cards list widget
   const renderLibrary = () => {
     if (gardenList.length === 0) {
       return (
         <View style={styles.emptyContainer}>
-          <SymbolView name="camera.filters" size={64} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'camera.filters', android: 'photo_camera', web: 'photo_camera' }}
+            size={64}
+            tintColor={theme.textSecondary}
+          />
           <Text style={[styles.emptyTitle, { color: theme.text }]}>Your Garden is Empty</Text>
           <Text style={[styles.emptyDesc, { color: theme.textSecondary }]}>
             Identify plants using Claude AI and capture GPS locations to build your catalog.
@@ -223,7 +260,11 @@ export function HomeView({
         <View style={styles.sectionHeaderRow}>
           <Text style={[styles.sectionTitle, { color: theme.text }]}>My Plant Library</Text>
           <View style={[styles.countBadge, { backgroundColor: theme.backgroundElement }]}>
-            <SymbolView name="leaf.fill" size={10} tintColor={theme.primary} />
+            <SymbolView
+              name={{ ios: 'leaf.fill', android: 'eco', web: 'eco' }}
+              size={10}
+              tintColor={theme.primary}
+            />
             <Text style={[styles.countBadgeLabel, { color: theme.text }]}>{stats.totalCount} Plants</Text>
           </View>
         </View>
@@ -247,7 +288,10 @@ export function HomeView({
              <Pressable
                key={item.id}
                style={({ pressed }) => [pressed && styles.pressed]}
-               onPress={() => router.push({ pathname: '/plant/[id]', params: { id: item.id } })}
+                onPress={() => {
+                  console.log(`[HomeView] Touch Registered: Plant card pressed, id: ${item.id}`);
+                  router.push(`/plant/${item.id}`);
+                }}
              >
               <GlassCard style={styles.plantCard}>
                 <Image source={{ uri: item.photoUri }} style={styles.thumbnail} contentFit="cover" />
@@ -259,7 +303,11 @@ export function HomeView({
                         {item.customName}
                       </Text>
                       {item.healthStatus === 'Diseased' && (
-                        <SymbolView name="medical.thermometer.fill" size={11} tintColor={theme.danger} />
+                        <SymbolView
+                          name={{ ios: 'medical.thermometer.fill', android: 'medical_services', web: 'medical_services' }}
+                          size={11}
+                          tintColor={theme.danger}
+                        />
                       )}
                     </View>
                     <Text style={[styles.plantSpecies, { color: theme.textSecondary }]} numberOfLines={1}>
@@ -280,7 +328,11 @@ export function HomeView({
                     )}
                     {item.discoveryLocation?.placeName && !isPruningMonth && !isFertilizingMonth && (
                       <View style={styles.locationRow}>
-                        <SymbolView name="mappin.circle" size={10} tintColor={theme.textSecondary} />
+                        <SymbolView
+                          name={{ ios: 'mappin.circle', android: 'location_on', web: 'location_on' }}
+                          size={10}
+                          tintColor={theme.textSecondary}
+                        />
                         <Text style={[styles.locationLabel, { color: theme.textSecondary }]} numberOfLines={1}>
                           {item.discoveryLocation.placeName}
                         </Text>
@@ -312,11 +364,15 @@ export function HomeView({
                     ]}
                     onPress={() => onWaterPlant(item.id)}
                   >
-                    <SymbolView name="drop.fill" size={12} tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'} />
+                    <SymbolView
+                      name={{ ios: 'drop.fill', android: 'water_drop', web: 'water_drop' }}
+                      size={12}
+                      tintColor={themeMode === 'dark' ? '#070c09' : '#ffffff'}
+                    />
                   </Pressable>
                 </View>
               </GlassCard>
-            </Pressable>
+             </Pressable>
           );
         })}
       </View>
@@ -328,14 +384,22 @@ export function HomeView({
     <GlassCard style={[styles.weatherCard, { opacity: 0.6, borderStyle: 'dashed' }]}>
       <View style={styles.weatherRow}>
         <View style={styles.weatherLeftCol}>
-          <SymbolView name="sun.max" size={20} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'sun.max', android: 'wb_sunny', web: 'wb_sunny' }}
+            size={20}
+            tintColor={theme.textSecondary}
+          />
           <View style={{ gap: 2 }}>
             <Text style={[styles.weatherTempText, { color: theme.textSecondary }]}>--°C</Text>
             <Text style={[styles.weatherDescText, { color: theme.textSecondary }]}>Awaiting Weather Sync...</Text>
           </View>
         </View>
         <View style={styles.weatherRightCol}>
-          <SymbolView name="mappin.circle" size={10} tintColor={theme.textSecondary} />
+          <SymbolView
+            name={{ ios: 'mappin.circle', android: 'location_on', web: 'location_on' }}
+            size={10}
+            tintColor={theme.textSecondary}
+          />
           <Text style={[styles.weatherLocationText, { color: theme.textSecondary }]}>Awaiting GPS</Text>
         </View>
       </View>
@@ -362,7 +426,11 @@ export function HomeView({
     return (
       <GlassCard style={[styles.editModeBanner, { borderColor: theme.primary }]}>
         <View style={styles.editModeBannerRow}>
-          <SymbolView name="slider.horizontal.3" size={16} tintColor={theme.primary} />
+          <Image
+            source={require('../../../assets/images/custom-slider.png')}
+            style={{ width: 16, height: 16 }}
+            contentFit="contain"
+          />
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={[styles.editModeBannerTitle, { color: theme.text }]}>
               Dashboard Customizer
@@ -413,14 +481,18 @@ export function HomeView({
 
     return (
       <View key={widgetId} style={styles.widgetWrapper}>
-        {isEditingWidgets && (
+        {isEditingWidgets ? (
           <View style={[styles.editWidgetControls, { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder }]}>
             <Pressable
               onPress={() => onToggleWidgetVisibility(widgetId)}
               style={styles.widgetVisibleBtn}
             >
               <SymbolView
-                name={isVisible ? 'eye.fill' : 'eye.slash.fill'}
+                name={{
+                  ios: isVisible ? 'eye.fill' : 'eye.slash.fill',
+                  android: isVisible ? 'visibility' : 'visibility_off',
+                  web: isVisible ? 'visibility' : 'visibility_off',
+                }}
                 size={14}
                 tintColor={isVisible ? theme.primary : theme.danger}
               />
@@ -432,25 +504,39 @@ export function HomeView({
             <View style={styles.widgetMoveGroup}>
               <Pressable
                 onPress={() => !isFirst && onMoveWidgetUp(widgetId)}
-                style={[styles.widgetMoveBtn, isFirst && { opacity: 0.3 }]}
+                style={[
+                  styles.widgetMoveBtn,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder },
+                  isFirst && { opacity: 0.25 }
+                ]}
                 disabled={isFirst}
               >
-                <SymbolView name="chevron.up" size={10} tintColor={isFirst ? theme.textSecondary : theme.primary} />
+                <SymbolView
+                  name={{ ios: 'chevron.up', android: 'keyboard_arrow_up', web: 'keyboard_arrow_up' }}
+                  size={10}
+                  tintColor={isFirst ? theme.textSecondary : theme.primary}
+                />
               </Pressable>
               <Pressable
                 onPress={() => !isLast && onMoveWidgetDown(widgetId)}
-                style={[styles.widgetMoveBtn, isLast && { opacity: 0.3 }]}
+                style={[
+                  styles.widgetMoveBtn,
+                  { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder },
+                  isLast && { opacity: 0.25 }
+                ]}
                 disabled={isLast}
               >
-                <SymbolView name="chevron.down" size={10} tintColor={isLast ? theme.textSecondary : theme.primary} />
+                <SymbolView
+                  name={{ ios: 'chevron.down', android: 'keyboard_arrow_down', web: 'keyboard_arrow_down' }}
+                  size={10}
+                  tintColor={isLast ? theme.textSecondary : theme.primary}
+                />
               </Pressable>
             </View>
           </View>
+        ) : (
+          content
         )}
-
-        <View style={!isVisible ? { opacity: 0.35 } : null}>
-          {content}
-        </View>
       </View>
     );
   };
@@ -481,15 +567,31 @@ export function HomeView({
             ]}
             onPress={onToggleEditWidgetsMode}
           >
-            <SymbolView
-              name={isEditingWidgets ? 'checkmark' : 'slider.horizontal.3'}
-              size={12}
-              tintColor={isEditingWidgets ? (themeMode === 'dark' ? '#070c09' : '#fff') : theme.primary}
-            />
+            {isEditingWidgets ? (
+              <SymbolView
+                name={{
+                  ios: 'checkmark',
+                  android: 'check',
+                  web: 'check',
+                }}
+                size={12}
+                tintColor={themeMode === 'dark' ? '#070c09' : '#fff'}
+              />
+            ) : (
+              <Image
+                source={require('../../../assets/images/custom-slider.png')}
+                style={{ width: 14, height: 14 }}
+                contentFit="contain"
+              />
+            )}
           </Pressable>
 
           <View style={styles.headerProfileRowInner}>
-            <SymbolView name="person" size={18} tintColor={theme.primary} />
+            <SymbolView
+              name={{ ios: 'person', android: 'person', web: 'person' }}
+              size={18}
+              tintColor={theme.primary}
+            />
             <Text style={[styles.headerUserName, { color: theme.text }]} numberOfLines={1}>
               {userName || 'Ian B.'}
             </Text>
@@ -503,6 +605,7 @@ export function HomeView({
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />
         }
       >
+        {renderEditBanner()}
         {/* Render dynamically reordered widgets */}
         {widgetOrder.map(id => renderWidget(id))}
       </ScrollView>
@@ -846,5 +949,24 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.08)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  editModeBanner: {
+    padding: 12,
+    borderWidth: 1.5,
+    marginBottom: Spacing.one,
+  },
+  editModeBannerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  editModeBannerTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  editModeBannerDesc: {
+    fontSize: 10,
+    fontWeight: '600',
+    lineHeight: 14,
   },
 });

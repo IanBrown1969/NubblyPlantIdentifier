@@ -1,9 +1,9 @@
 import React from 'react';
-import { useScanController } from '../controllers/useScanController';
-import { useAuthController } from '../controllers/useAuthController';
-import { useAuth } from '../context/AuthContext';
-import { ScanView } from '../views/screens/ScanView';
-import { PaywallView } from '../views/screens/PaywallView';
+import { useScanController } from '../../controllers/useScanController';
+import { useAuthController } from '../../controllers/useAuthController';
+import { useAuth } from '../../context/AuthContext';
+import { ScanView } from '../../views/screens/ScanView';
+import { PaywallView } from '../../views/screens/PaywallView';
 
 /**
  * Scan AI Camera Tab Routing Entry.

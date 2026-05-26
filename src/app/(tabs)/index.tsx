@@ -1,7 +1,7 @@
 import React from 'react';
-import { useHomeController } from '../controllers/useHomeController';
-import { useAuth } from '../context/AuthContext';
-import { HomeView } from '../views/screens/HomeView';
+import { useHomeController } from '../../controllers/useHomeController';
+import { useAuth } from '../../context/AuthContext';
+import { HomeView } from '../../views/screens/HomeView';
 
 /**
  * Primary Home Tab Routing Entry.

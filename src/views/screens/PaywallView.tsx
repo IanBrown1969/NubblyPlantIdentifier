@@ -47,7 +47,11 @@ export function PaywallView({ onUnlockSubscription, onDismiss }: PaywallViewProp
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.crownBadge, { backgroundColor: 'rgba(245, 158, 11, 0.1)', borderColor: 'rgba(245, 158, 11, 0.3)' }]}>
-            <SymbolView name="crown.fill" size={14} tintColor="#F59E0B" />
+            <SymbolView
+              name={{ ios: 'crown.fill', android: 'grade', web: 'grade' }}
+              size={14}
+              tintColor="#F59E0B"
+            />
             <Text style={styles.badgeText}>PREMIUM ACCESS</Text>
           </View>
           <Text style={[styles.title, { color: theme.text }]}>Unlock Nubbly Premium</Text>
@@ -59,7 +63,11 @@ export function PaywallView({ onUnlockSubscription, onDismiss }: PaywallViewProp
         {/* Premium Benefits List */}
         <View style={styles.benefits}>
           <View style={styles.benefitRow}>
-            <SymbolView name="checkmark.circle.fill" size={18} tintColor={theme.success} />
+            <SymbolView
+              name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+              size={18}
+              tintColor={theme.success}
+            />
             <View style={styles.benefitTextCol}>
               <Text style={[styles.benefitTitle, { color: theme.text }]}>Unlimited AI Photo Scans</Text>
               <Text style={[styles.benefitDesc, { color: theme.textSecondary }]}>
@@ -69,7 +77,11 @@ export function PaywallView({ onUnlockSubscription, onDismiss }: PaywallViewProp
           </View>
 
           <View style={styles.benefitRow}>
-            <SymbolView name="checkmark.circle.fill" size={18} tintColor={theme.success} />
+            <SymbolView
+              name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+              size={18}
+              tintColor={theme.success}
+            />
             <View style={styles.benefitTextCol}>
               <Text style={[styles.benefitTitle, { color: theme.text }]}>Expert Care & Troubleshooting Clinic</Text>
               <Text style={[styles.benefitDesc, { color: theme.textSecondary }]}>
@@ -79,7 +91,11 @@ export function PaywallView({ onUnlockSubscription, onDismiss }: PaywallViewProp
           </View>
 
           <View style={styles.benefitRow}>
-            <SymbolView name="checkmark.circle.fill" size={18} tintColor={theme.success} />
+            <SymbolView
+              name={{ ios: 'checkmark.circle.fill', android: 'check_circle', web: 'check_circle' }}
+              size={18}
+              tintColor={theme.success}
+            />
             <View style={styles.benefitTextCol}>
               <Text style={[styles.benefitTitle, { color: theme.text }]}>GPS Discovery Mapping</Text>
               <Text style={[styles.benefitDesc, { color: theme.textSecondary }]}>

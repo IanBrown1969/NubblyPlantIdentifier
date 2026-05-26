@@ -107,7 +107,7 @@ export function useHomeController() {
       if (order) setWidgetOrder(JSON.parse(order));
       if (visibility) setVisibleWidgets(JSON.parse(visibility));
     } catch (e) {
-      console.warn('[HomeController] Failed to restore widget arrangements:', e);
+      console.log('[HomeController] Failed to restore widget arrangements:', e);
     }
   }, []);
 
@@ -123,7 +123,7 @@ export function useHomeController() {
       const data = await WeatherService.getLocalWeather(lat, lon, place);
       setWeather(data);
     } catch (e) {
-      console.warn('[HomeController] Failed to load weather telemetry:', e);
+      console.log('[HomeController] Failed to load weather telemetry:', e);
     }
   }, []);
 

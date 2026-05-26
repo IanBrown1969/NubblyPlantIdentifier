@@ -1,7 +1,7 @@
 import React from 'react';
-import { useAuthController } from '../controllers/useAuthController';
-import { useAuth } from '../context/AuthContext';
-import { SettingsView } from '../views/screens/SettingsView';
+import { useAuthController } from '../../controllers/useAuthController';
+import { useAuth } from '../../context/AuthContext';
+import { SettingsView } from '../../views/screens/SettingsView';
 
 /**
  * Settings Tab Routing Entry.

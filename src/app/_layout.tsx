@@ -1,8 +1,7 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider, Stack } from 'expo-router';
 import { ActivityIndicator, View } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 
 import { initDatabase } from '../models/Database';
 import { AuthProvider, useAuth } from '../context/AuthContext';
@@ -47,11 +46,16 @@ function AppContent() {
     );
   }
 
-  // App is unlocked: render splash and tab routing shell
+  // App is unlocked: render splash and Stack routing shell
   return (
     <ThemeProvider value={themeMode === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="planner" options={{ presentation: 'card', headerShown: false }} />
+        <Stack.Screen name="wishlist" options={{ presentation: 'card', headerShown: false }} />
+        <Stack.Screen name="plant/[id]" options={{ presentation: 'card', headerShown: false }} />
+      </Stack>
     </ThemeProvider>
   );
 }

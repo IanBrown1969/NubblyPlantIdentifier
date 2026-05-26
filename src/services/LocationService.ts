@@ -17,7 +17,7 @@ export const LocationService = {
       const { status } = await Location.requestForegroundPermissionsAsync();
       return status === 'granted';
     } catch (e) {
-      console.warn('[LocationService] Permission request failed:', e);
+      console.log('[LocationService] Permission request failed:', e);
       return false;
     }
   },
@@ -58,7 +58,7 @@ export const LocationService = {
           }
         }
       } catch (geocodeErr) {
-        console.warn('[LocationService] Geocoding failed, falling back to raw coordinates:', geocodeErr);
+        console.log('[LocationService] Geocoding failed, falling back to raw coordinates:', geocodeErr);
         placeName = `GPS: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`;
       }
 
@@ -68,7 +68,7 @@ export const LocationService = {
         placeName,
       };
     } catch (error) {
-      console.warn('[LocationService] Error fetching GPS position (using botanical fallback):', error);
+      console.log('[LocationService] Error fetching GPS position (using botanical fallback):', error);
       // Fallback for simulators or environments without working GPS hardware
       return {
         latitude: 51.5074,

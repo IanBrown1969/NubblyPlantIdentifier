@@ -1,7 +1,7 @@
 import React from 'react';
-import { useExploreController } from '../controllers/useExploreController';
-import { useAuth } from '../context/AuthContext';
-import { ExploreView } from '../views/screens/ExploreView';
+import { useExploreController } from '../../controllers/useExploreController';
+import { useAuth } from '../../context/AuthContext';
+import { ExploreView } from '../../views/screens/ExploreView';
 
 /**
  * Explore Search Tab Routing Entry.

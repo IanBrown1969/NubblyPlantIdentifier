@@ -2,7 +2,7 @@ import { Plant } from '../models/PlantModel';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
-const CLAUDE_MODEL = 'claude-3-5-sonnet-20241022'; // Visual capable industry standard model
+const CLAUDE_MODEL = 'claude-3-5-sonnet-latest'; // Universally supported dynamic production alias
 
 // High-fidelity structured system prompt instructing Claude to return clean JSON
 const SYSTEM_PROMPT = `You are a professional master botanist and plant doctor. Your task is to identify the plant shown in the image and provide a highly detailed care sheet and troubleshooting guide.
@@ -162,8 +162,18 @@ export const ClaudeService = {
 
       return { success: true };
     } catch (e: any) {
-      console.error('[ClaudeService] Key validation network error:', e);
-      return { success: false, error: 'Network error: check internet connection' };
+      console.warn('[ClaudeService] Key validation network/CORS error:', e);
+      // Fall back to local structural format checking if a network or CORS block occurs on client devices.
+      // This prevents CORS and local fetch blocks from locking mobile users out of saving their keys.
+      const trimmedKey = apiKey.trim();
+      if (trimmedKey.startsWith('sk-ant-') && trimmedKey.length >= 40) {
+        console.log('[ClaudeService] Network/CORS check failed but key format is structurally valid. Bypassing check.');
+        return { success: true };
+      }
+      return { 
+        success: false, 
+        error: 'Network connection failed. Please ensure your device has internet access and your key format (starting with sk-ant-) is correct.' 
+      };
     }
   },
 

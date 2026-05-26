@@ -16,7 +16,7 @@ export const AuthModel = {
     try {
       return await SecureStore.getItemAsync(KEYS.CLAUDE_API_KEY);
     } catch {
-      console.warn('[AuthModel] Failed to read API key from SecureStore:');
+      console.log('[AuthModel] Failed to read API key from SecureStore:');
       return null;
     }
   },

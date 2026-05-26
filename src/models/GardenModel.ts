@@ -106,7 +106,7 @@ export const GardenModel = {
         careGuide = JSON.parse(row.care_guide_json);
       }
     } catch (e) {
-      console.warn('[GardenModel] Failed to parse care_guide_json:', e);
+      console.log('[GardenModel] Failed to parse care_guide_json:', e);
     }
 
     const item: GardenItem = {

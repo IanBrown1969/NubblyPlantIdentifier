@@ -83,7 +83,11 @@ export function LoginView({
               ]}
               onPress={onLoginWithGoogle}
             >
-              <SymbolView name="lock.fill" size={16} tintColor={theme.text} />
+              <SymbolView
+                name={{ ios: 'lock.fill', android: 'lock', web: 'lock' }}
+                size={16}
+                tintColor={theme.text}
+              />
               <Text style={[styles.googleLabel, { color: theme.text }]}>Sign In with Google</Text>
             </Pressable>
 
