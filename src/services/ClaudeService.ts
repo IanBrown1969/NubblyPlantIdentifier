@@ -2,7 +2,7 @@ import { Plant } from '../models/PlantModel';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
-const CLAUDE_MODEL = 'claude-3-5-sonnet-latest'; // Universally supported dynamic production alias
+const CLAUDE_MODEL = 'claude-sonnet-4-6'; // Modern flagship production model for standard usage
 
 // High-fidelity structured system prompt instructing Claude to return clean JSON
 const SYSTEM_PROMPT = `You are a professional master botanist and plant doctor. Your task is to identify the plant shown in the image and provide a highly detailed care sheet and troubleshooting guide.
