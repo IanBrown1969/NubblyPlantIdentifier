@@ -7,15 +7,21 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "cache": true
+      "cache": {
+        "disabled": false
+      }
     },
     "preview": {
       "distribution": "internal",
-      "cache": true
+      "cache": {
+        "disabled": false
+      }
     },
     "production": {
       "autoIncrement": true,
-      "cache": true
+      "cache": {
+        "disabled": false
+      }
     }
   },
   "submit": {

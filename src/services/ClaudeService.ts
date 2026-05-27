@@ -124,7 +124,7 @@ export const ClaudeService = {
           'dangerously-allow-browser': 'true',
         },
         body: JSON.stringify({
-          model: 'claude-3-haiku-20240307', // fast, cheap model for quick validation
+          model: CLAUDE_MODEL, // Use the universally supported Sonnet production model for key validation
           max_tokens: 1,
           messages: [
             {
