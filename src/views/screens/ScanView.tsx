@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
 import { useRouter } from 'expo-router';
@@ -62,6 +62,53 @@ export function ScanView({
         isActive={isScanningActive}
         imageUri={selectedImageUri}
       />
+
+      {/* Full-Screen Glassmorphic Loading Progress Overlay */}
+      {isScanningActive && (
+        <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(7, 12, 9, 0.4)' }]}>
+          {selectedImageUri && (
+            <Image
+              source={{ uri: selectedImageUri }}
+              style={StyleSheet.absoluteFillObject}
+              blurRadius={30}
+              contentFit="cover"
+              opacity={0.25}
+            />
+          )}
+          
+          <GlassCard style={styles.loadingOverlayCard}>
+            <ActivityIndicator size="large" color={theme.primary} style={{ marginBottom: 12 }} />
+            
+            <Text style={[styles.loadingTitle, { color: theme.text }]}>
+              {status === 'capturing' ? 'Aligning Optical Focus...' :
+               status === 'gps' ? 'Geocoding Coordinate Location...' :
+               status === 'uploading' ? 'Transmitting Visual Base64 payload...' :
+               status === 'analyzing' ? 'Claude is Analyzing Foliage...' :
+               status === 'saving' ? 'Relational SQLite mapping...' : 'Cataloging Houseplant...'}
+            </Text>
+
+            <Text style={[styles.loadingDesc, { color: theme.textSecondary }]}>
+              {telemetryMessage || 'Calibrating system lens...'}
+            </Text>
+
+            <View style={styles.miniProgressTrack}>
+              <View 
+                style={[
+                  styles.miniProgressBar, 
+                  { 
+                    width: `${progress * 100}%`, 
+                    backgroundColor: theme.primary 
+                  }
+                ]} 
+              />
+            </View>
+            
+            <Text style={[styles.miniProgressText, { color: theme.primary }]}>
+              SYSTEM RESOLUTION: {Math.round(progress * 100)}%
+            </Text>
+          </GlassCard>
+        </View>
+      )}
 
       {/* Locked Premium Top Header Bar */}
       {!isScanningActive && (
@@ -633,5 +680,45 @@ const styles = StyleSheet.create({
   modeTabLabel: {
     fontSize: 11,
     fontWeight: '800',
+  },
+  loadingOverlayCard: {
+    width: '85%',
+    maxWidth: 340,
+    alignItems: 'center',
+    padding: 24,
+    gap: 12,
+    elevation: 5,
+  },
+  loadingTitle: {
+    fontSize: 16,
+    fontWeight: '900',
+    letterSpacing: -0.3,
+    textAlign: 'center',
+  },
+  loadingDesc: {
+    fontSize: 11,
+    fontWeight: '600',
+    lineHeight: 16,
+    textAlign: 'center',
+    fontFamily: 'monospace',
+    minHeight: 32,
+  },
+  miniProgressTrack: {
+    height: 4,
+    width: '100%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 2,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  miniProgressBar: {
+    height: '100%',
+    borderRadius: 2,
+  },
+  miniProgressText: {
+    fontSize: 8.5,
+    fontWeight: '900',
+    letterSpacing: 0.5,
+    fontFamily: 'monospace',
   },
 });
