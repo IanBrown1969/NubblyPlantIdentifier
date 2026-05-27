@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
+import { Image } from 'expo-image';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -14,13 +15,14 @@ interface ScanHUDProps {
   telemetryMessage: string;
   progress: number;
   isActive: boolean;
+  imageUri?: string | null;
 }
 
 /**
  * Animated camera scanner HUD.
  * Sweeps a physical laser line up/down and renders active diagnostic stats.
  */
-export function ScanHUD({ telemetryMessage, progress, isActive }: ScanHUDProps) {
+export function ScanHUD({ telemetryMessage, progress, isActive, imageUri }: ScanHUDProps) {
   const { theme } = useAuth();
 
   // Reanimated Shared Value for sweeping laser line
@@ -68,8 +70,30 @@ export function ScanHUD({ telemetryMessage, progress, isActive }: ScanHUDProps) 
 
   return (
     <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+      {/* Ambient Blurred Background of the processing image */}
+      {imageUri && (
+        <View style={StyleSheet.absoluteFillObject}>
+          <Image
+            source={{ uri: imageUri }}
+            style={StyleSheet.absoluteFillObject}
+            blurRadius={20}
+            contentFit="cover"
+            opacity={0.35}
+          />
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(7, 12, 9, 0.4)' }]} />
+        </View>
+      )}
+
       {/* Target Crosshair Corners with Contained Sweeping Laser */}
       <View style={styles.viewfinder}>
+        {imageUri && (
+          <Image
+            source={{ uri: imageUri }}
+            style={StyleSheet.absoluteFillObject}
+            contentFit="cover"
+            opacity={0.7}
+          />
+        )}
         <View style={[styles.corner, styles.topLeft, { borderColor: theme.primary }]} />
         <View style={[styles.corner, styles.topRight, { borderColor: theme.primary }]} />
         <View style={[styles.corner, styles.bottomLeft, { borderColor: theme.primary }]} />

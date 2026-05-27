@@ -22,6 +22,7 @@ export default function ScanRoute() {
         progress={controller.progress}
         telemetryMessage={controller.telemetryMessage}
         scannedResult={controller.scannedResult}
+        selectedImageUri={controller.selectedImageUri}
         showPaywall={controller.showPaywall}
         scanError={controller.scanError}
         setScanMode={controller.setScanMode}

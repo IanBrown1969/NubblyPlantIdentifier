@@ -16,6 +16,7 @@ interface ScanViewProps {
   progress: number;
   telemetryMessage: string;
   scannedResult: GardenItem | null;
+  selectedImageUri: string | null;
   showPaywall: boolean;
   scanError: string | null;
   setScanMode: (mode: 'identity' | 'diagnosis') => void;
@@ -37,6 +38,7 @@ export function ScanView({
   progress,
   telemetryMessage,
   scannedResult,
+  selectedImageUri,
   showPaywall,
   scanError,
   setScanMode,
@@ -58,6 +60,7 @@ export function ScanView({
         telemetryMessage={telemetryMessage}
         progress={progress}
         isActive={isScanningActive}
+        imageUri={selectedImageUri}
       />
 
       {/* Locked Premium Top Header Bar */}

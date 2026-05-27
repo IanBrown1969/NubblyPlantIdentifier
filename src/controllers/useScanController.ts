@@ -16,6 +16,7 @@ export function useScanController() {
   const [telemetryMessage, setTelemetryMessage] = useState('');
   const [progress, setProgress] = useState(0);
   const [scannedResult, setScannedResult] = useState<GardenItem | null>(null);
+  const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
 
@@ -37,6 +38,7 @@ export function useScanController() {
     setProgress(0);
     setScannedResult(null);
     setScanError(null);
+    setSelectedImageUri(null);
   }, []);
 
   /**
@@ -44,6 +46,7 @@ export function useScanController() {
    */
   const executeScanFlow = async (imageUri: string, base64Data: string | undefined) => {
     setScanError(null);
+    setSelectedImageUri(imageUri);
     try {
       // 1. GPS Acquisition
       updateTelemetry('Acquiring high-precision GPS discovery coordinates...', 0.15);
@@ -221,6 +224,7 @@ export function useScanController() {
     progress,
     telemetryMessage,
     scannedResult,
+    selectedImageUri,
     showPaywall,
     scanError,
 

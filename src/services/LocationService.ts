@@ -33,9 +33,21 @@ export const LocationService = {
         return null;
       }
 
-      // Fetch active location
-      const pos = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Balanced,
+      // Fetch active location with a strict 6-second timeout to prevent emulator GPS locks
+      const pos = await Promise.race([
+        Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+        }),
+        new Promise<never>((_, reject) => 
+          setTimeout(() => reject(new Error('GPS Lock Timeout')), 6000)
+        )
+      ]).catch(async (err) => {
+        console.log('[LocationService] Active GPS lock timed out or failed. Fetching last known location...', err);
+        const lastKnown = await Location.getLastKnownPositionAsync();
+        if (!lastKnown) {
+          throw new Error('No GPS coordinates or last known location available.');
+        }
+        return lastKnown;
       });
 
       const { latitude, longitude } = pos.coords;

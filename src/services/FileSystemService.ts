@@ -25,8 +25,8 @@ export const FileSystemService = {
    * Returns the new permanent file URI.
    */
   async savePhotoPermanently(tempUri: string, id: string): Promise<string> {
-    // If running on web, we do not need local sandboxed path copying
-    if (Platform.OS === 'web' || tempUri.startsWith('http' || tempUri.startsWith('data:'))) {
+    // If running on web, or if URI is a web URL or base64 data URI, bypass sandboxed file copying
+    if (Platform.OS === 'web' || tempUri.startsWith('http') || tempUri.startsWith('data:')) {
       return tempUri;
     }
 
