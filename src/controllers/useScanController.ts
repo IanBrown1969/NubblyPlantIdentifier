@@ -48,26 +48,20 @@ export function useScanController() {
     setScanError(null);
     setSelectedImageUri(imageUri);
     try {
-      // 1. GPS Acquisition
-      updateTelemetry('Acquiring high-precision GPS discovery coordinates...', 0.15);
-      setStatus('gps');
-      const location = await LocationService.getCurrentLocation();
-      const placeName = location?.placeName || 'Unknown Location';
-
-      // 2. Transmitting visual assets to AI service
-      updateTelemetry('Opening secure socket connection to Claude AI...', 0.35);
+      // Fetch GPS coordinates and launch visual Claude AI plant analysis in parallel to bypass sequential waits!
+      updateTelemetry('Acquiring discovery location & analyzing foliage visual taxonomy...', 0.30);
       setStatus('uploading');
       
-      updateTelemetry('Analyzing foliage cellular margins & visual taxonomy...', 0.60);
-      setStatus('analyzing');
-      
-      // If we don't have base64 (e.g. mock selections), identifyPlant automatically triggers simulation
-      const claudeProfile = await ClaudeService.identifyPlant(
-        base64Data || '',
-        'image/jpeg',
-        claudeApiKey,
-        scanMode
-      );
+      const [location, claudeProfile] = await Promise.all([
+        LocationService.getCurrentLocation(),
+        ClaudeService.identifyPlant(
+          base64Data || '',
+          'image/jpeg',
+          claudeApiKey,
+          scanMode
+        )
+      ]);
+      const placeName = location?.placeName || 'Unknown Location';
 
       // 3. Saving & relational mapping inside local database
       updateTelemetry('Writing records to SQLite relational database...', 0.85);
@@ -133,7 +127,7 @@ export function useScanController() {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
-        quality: 0.8,
+        quality: 0.5,
         base64: true,
       });
 
@@ -174,7 +168,7 @@ export function useScanController() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
-        quality: 0.8,
+        quality: 0.5,
         base64: true,
       });
 
