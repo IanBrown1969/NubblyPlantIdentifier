@@ -59,14 +59,16 @@ export function SettingsView({
 
   const handleSaveKey = async () => {
     if (isValidating) return;
+    const trimmedKey = apiKeyInput.trim();
+    setApiKeyInput(trimmedKey); // Update text input on screen immediately with trimmed text
     setValidationError(null);
     setIsValidating(true);
     setSaveSuccess(false);
 
     try {
-      const result = await ClaudeService.validateApiKey(apiKeyInput);
+      const result = await ClaudeService.validateApiKey(trimmedKey);
       if (result.success) {
-        await onSaveClaudeApiKey(apiKeyInput);
+        await onSaveClaudeApiKey(trimmedKey);
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
       } else {
