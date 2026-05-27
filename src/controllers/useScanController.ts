@@ -53,7 +53,15 @@ export function useScanController() {
       setStatus('uploading');
 
       // Dynamically resolve image MIME type from file extension to satisfy Anthropic image headers
-      const ext = imageUri.split('.').pop()?.split('?')[0]?.toLowerCase() || 'jpeg';
+      let ext = 'jpeg';
+      const cleanUri = imageUri.split('?')[0];
+      const lastDot = cleanUri.lastIndexOf('.');
+      if (lastDot !== -1) {
+        const parsedExt = cleanUri.substring(lastDot + 1).toLowerCase();
+        if (/^[a-z0-9]{1,4}$/.test(parsedExt)) {
+          ext = parsedExt;
+        }
+      }
       const resolvedMime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
 
       const [location, claudeProfile] = await Promise.all([

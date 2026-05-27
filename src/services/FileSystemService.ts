@@ -32,7 +32,18 @@ export const FileSystemService = {
 
     try {
       await this.ensureDirectoryExists();
-      const fileExtension = tempUri.split('.').pop()?.split('?')[0] || 'jpg';
+      
+      // Safely extract the file extension or fallback to 'jpg' for extension-less content:// URIs
+      let fileExtension = 'jpg';
+      const cleanUri = tempUri.split('?')[0];
+      const lastDot = cleanUri.lastIndexOf('.');
+      if (lastDot !== -1) {
+        const ext = cleanUri.substring(lastDot + 1).toLowerCase();
+        if (/^[a-z0-9]{1,4}$/.test(ext)) {
+          fileExtension = ext;
+        }
+      }
+
       const permanentUri = `${GARDEN_ASSETS_DIR}${id}.${fileExtension}`;
       
       await copyAsync({
