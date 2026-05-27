@@ -201,7 +201,7 @@ export const ClaudeService = {
     }
 
     try {
-      console.log('[ClaudeService] Initiating visual API request to Anthropic Claude 3.5 Sonnet...');
+      console.log('[ClaudeService] Initiating visual API request to Anthropic Claude...');
       
       // Clean and sanitize base64 string, stripping any data URI prefix if present
       let cleanedBase64 = base64Image;
@@ -209,8 +209,13 @@ export const ClaudeService = {
         cleanedBase64 = base64Image.split(';base64,')[1];
       }
 
+      // Configure a strict 30-second network abort timeout to prevent network sockets from hanging indefinitely
+      const abortController = new AbortController();
+      const networkTimeoutId = setTimeout(() => abortController.abort(), 30000);
+
       const response = await fetch(ANTHROPIC_API_URL, {
         method: 'POST',
+        signal: abortController.signal,
         headers: {
           'x-api-key': apiKey,
           'anthropic-version': ANTHROPIC_VERSION,
@@ -244,6 +249,8 @@ export const ClaudeService = {
           ],
         }),
       });
+
+      clearTimeout(networkTimeoutId);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -286,7 +293,10 @@ export const ClaudeService = {
           ]
         }
       };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.name === 'AbortError') {
+        throw new Error('Uploading the base64 image timed out. Please ensure you have a strong, stable internet connection and try again.');
+      }
       console.error('[ClaudeService] Error during visual identification:', error);
       throw error;
     }

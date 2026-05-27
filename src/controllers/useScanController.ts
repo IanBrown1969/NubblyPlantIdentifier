@@ -51,12 +51,16 @@ export function useScanController() {
       // Fetch GPS coordinates and launch visual Claude AI plant analysis in parallel to bypass sequential waits!
       updateTelemetry('Acquiring discovery location & analyzing foliage visual taxonomy...', 0.30);
       setStatus('uploading');
-      
+
+      // Dynamically resolve image MIME type from file extension to satisfy Anthropic image headers
+      const ext = imageUri.split('.').pop()?.split('?')[0]?.toLowerCase() || 'jpeg';
+      const resolvedMime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
+
       const [location, claudeProfile] = await Promise.all([
         LocationService.getCurrentLocation(),
         ClaudeService.identifyPlant(
           base64Data || '',
-          'image/jpeg',
+          resolvedMime,
           claudeApiKey,
           scanMode
         )
