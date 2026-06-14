@@ -290,7 +290,7 @@ export function WishlistView({
                       <View style={styles.nurseryOptionsList}>
                         {nurseries.map((nursery, idx) => (
                           <Pressable
-                            key={idx}
+                            key={nursery.url}
                             style={({ pressed }) => [
                               styles.nurseryRow,
                               { backgroundColor: theme.backgroundElement },

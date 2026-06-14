@@ -405,7 +405,7 @@ export function PlantDetailView({
                     minute: '2-digit',
                   });
                   return (
-                    <View key={index} style={styles.historyRow}>
+                    <View key={`watering-${index}`} style={styles.historyRow}>
                       <SymbolView
                         name={{ ios: 'clock.fill', android: 'schedule', web: 'schedule' }}
                         size={11}
@@ -546,7 +546,7 @@ export function PlantDetailView({
               </Text>
               
               {p.careGuide.troubleshooting.map((item: any, idx: number) => (
-                <View key={idx} style={[styles.symptomCard, { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder }]}>
+                <View key={`symptom-${idx}`} style={[styles.symptomCard, { backgroundColor: theme.backgroundElement, borderColor: theme.cardBorder }]}>
                   <Text style={[styles.symptomName, { color: theme.danger }]}>⚠️ Symptom: {item.symptom}</Text>
                   <Text style={[styles.symptomDetail, { color: theme.text }]}>
                     <Text style={{ fontWeight: '800' }}>Biological Cause: </Text>

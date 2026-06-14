@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useCallback } from 'react';
+import { useFocusEffect } from 'expo-router';
 import { useHomeController } from '../../controllers/useHomeController';
 import { HomeView } from '../../views/screens/HomeView';
 
@@ -8,6 +9,14 @@ import { HomeView } from '../../views/screens/HomeView';
  */
 export default function HomeRoute() {
   const controller = useHomeController();
+
+  // Re-query SQLite whenever this tab gains focus so newly scanned plants
+  // are immediately visible without requiring a manual pull-to-refresh.
+  useFocusEffect(
+    useCallback(() => {
+      controller.onRefresh();
+    }, [controller.onRefresh])
+  );
 
   return (
     <HomeView

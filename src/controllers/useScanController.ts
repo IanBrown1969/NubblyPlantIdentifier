@@ -155,8 +155,6 @@ export function useScanController() {
         quality: 0.3,
         base64: true,
         exif: false,
-        maxWidth: 1024,
-        maxHeight: 1024,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -199,8 +197,6 @@ export function useScanController() {
         quality: 0.3,
         base64: true,
         exif: false,
-        maxWidth: 1024,
-        maxHeight: 1024,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {

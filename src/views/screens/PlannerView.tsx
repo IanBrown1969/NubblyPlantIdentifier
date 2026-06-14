@@ -178,6 +178,7 @@ export function PlannerView({
             <ScrollView style={styles.pickerList} contentContainerStyle={{ gap: 8 }}>
               {/* Clear Slot Option */}
               <Pressable
+                key="clear-slot"
                 style={({ pressed }) => [
                   styles.pickerItem,
                   { backgroundColor: theme.background, borderColor: theme.cardBorder },
@@ -205,7 +206,7 @@ export function PlannerView({
 
                 return (
                   <Pressable
-                    key={index}
+                    key={plant.id}
                     style={({ pressed }) => [
                       styles.pickerItem,
                       { backgroundColor: theme.background, borderColor: theme.cardBorder },
