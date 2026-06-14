@@ -228,7 +228,7 @@ export const ClaudeService = {
             'content-type': 'application/json',
             'dangerously-allow-browser': 'true',
           },
-          timeout: 30000, // 30-second timeout — replaces manual AbortController
+          timeout: 90000, // 90-second timeout — large base64 images need time on slower connections
         }
       );
 
@@ -268,8 +268,8 @@ export const ClaudeService = {
       };
     } catch (error: unknown) {
       const axiosErr = error as AxiosError<any>;
-      if (axiosErr.code === 'ECONNABORTED' || axiosErr.message?.includes('timeout')) {
-        throw new Error('Uploading the base64 image timed out. Please ensure you have a strong, stable internet connection and try again.');
+      if (axiosErr.code === 'ECONNABORTED' || axiosErr.message?.includes('timeout') || axiosErr.message === 'Network Error') {
+        throw new Error('The scan request timed out. Your image may be too large or your internet connection is slow. Please try again.');
       }
       if (axiosErr.response) {
         const errMsg = axiosErr.response.data?.error?.message || axiosErr.message;

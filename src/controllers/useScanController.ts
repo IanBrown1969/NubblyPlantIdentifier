@@ -152,8 +152,11 @@ export function useScanController() {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
-        quality: 0.5,
+        quality: 0.3,
         base64: true,
+        exif: false,
+        maxWidth: 1024,
+        maxHeight: 1024,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
@@ -193,8 +196,11 @@ export function useScanController() {
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
         allowsEditing: true,
-        quality: 0.5,
+        quality: 0.3,
         base64: true,
+        exif: false,
+        maxWidth: 1024,
+        maxHeight: 1024,
       });
 
       if (result.canceled || !result.assets || result.assets.length === 0) {
