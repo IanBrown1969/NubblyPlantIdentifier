@@ -1,4 +1,4 @@
-import { documentDirectory, getInfoAsync, makeDirectoryAsync, copyAsync, deleteAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy';
+import { documentDirectory, cacheDirectory, getInfoAsync, makeDirectoryAsync, copyAsync, deleteAsync, readAsStringAsync, downloadAsync, EncodingType } from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 const GARDEN_ASSETS_DIR = `${documentDirectory}garden/`;
@@ -63,14 +63,28 @@ export const FileSystemService = {
    * Reads a local URI (file:// or content://) and returns its base64 string representation.
    */
   async readUriAsBase64(uri: string): Promise<string> {
-    if (Platform.OS === 'web' || uri.startsWith('http') || uri.startsWith('data:')) {
-      return '';
+    if (Platform.OS === 'web') return '';
+    if (uri.startsWith('data:')) return '';
+
+    let localUri = uri;
+
+    // Remote HTTP/HTTPS images (e.g. Unsplash simulator assets) must be downloaded
+    // to the local cache directory before expo-file-system can read them as base64.
+    if (uri.startsWith('http')) {
+      try {
+        const filename = `sim_scan_${Date.now()}.jpg`;
+        console.log('[FileSystem] Downloading remote image to cache for base64 encode:', uri);
+        const downloaded = await downloadAsync(uri, `${cacheDirectory}${filename}`);
+        localUri = downloaded.uri;
+      } catch (err) {
+        console.error('[FileSystem] Failed to download remote image:', err);
+        return '';
+      }
     }
+
     try {
-      console.log('[FileSystem] Reading URI as base64:', uri);
-      const base64 = await readAsStringAsync(uri, {
-        encoding: EncodingType.Base64,
-      });
+      console.log('[FileSystem] Reading URI as base64:', localUri);
+      const base64 = await readAsStringAsync(localUri, { encoding: EncodingType.Base64 });
       return base64;
     } catch (err) {
       console.error('[FileSystem] Failed to read URI as base64:', err);
