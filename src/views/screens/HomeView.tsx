@@ -6,7 +6,9 @@ import { useRouter } from 'expo-router';
 import { Spacing, BottomTabInset } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { GlassCard } from '../components/glass-card';
-import { GardenItem, GardenDashboardStats } from '../../controllers/useHomeController';
+import { BrandHeader } from '../components/brand-header';
+import { GardenItem } from '../../models/GardenModel';
+import { GardenDashboardStats } from '../../controllers/useHomeController';
 import { WeatherTelemetry } from '../../services/WeatherService';
 
 interface HomeViewProps {
@@ -26,7 +28,7 @@ interface HomeViewProps {
   onMoveWidgetUp: (id: string) => Promise<void>;
   onMoveWidgetDown: (id: string) => Promise<void>;
   onToggleEditWidgetsMode: () => void;
-  userName?: string;
+
 }
 
 /**
@@ -48,7 +50,6 @@ export function HomeView({
   onMoveWidgetUp,
   onMoveWidgetDown,
   onToggleEditWidgetsMode,
-  userName,
 }: HomeViewProps) {
   const { theme, themeMode } = useAuth();
   const router = useRouter();
@@ -543,37 +544,20 @@ export function HomeView({
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Locked Premium Top Header Bar */}
-      <View style={[styles.brandHeaderBar, { backgroundColor: theme.background, borderBottomColor: theme.cardBorder }]}>
-        {/* Left Side: Brand Logo & Title */}
-        <View style={styles.brandLeftCol}>
-          <Image
-            source={require('../../../assets/images/logo-glow.png')}
-            style={styles.brandLogo}
-            contentFit="contain"
-          />
-          <Text style={[styles.brandTitleText, { color: theme.text }]}>
-            NUBBLY<Text style={{ color: theme.primary, fontWeight: '400' }}>PLANT</Text>
-          </Text>
-        </View>
-
-        {/* Right Side: Account Profile Details & Phase 7 Layout Editor Widget Toggle */}
-        <View style={styles.headerProfileRow}>
+      {/* Top Header Bar with widget-edit toggle */}
+      <BrandHeader
+        extraControls={
           <Pressable
             style={({ pressed }) => [
               styles.editWidgetsToggleBtn,
               isEditingWidgets && { backgroundColor: theme.primary },
-              pressed && styles.pressed
+              pressed && styles.pressed,
             ]}
             onPress={onToggleEditWidgetsMode}
           >
             {isEditingWidgets ? (
               <SymbolView
-                name={{
-                  ios: 'checkmark',
-                  android: 'check',
-                  web: 'check',
-                }}
+                name={{ ios: 'checkmark', android: 'check', web: 'check' }}
                 size={12}
                 tintColor={themeMode === 'dark' ? '#070c09' : '#fff'}
               />
@@ -585,19 +569,8 @@ export function HomeView({
               />
             )}
           </Pressable>
-
-          <View style={styles.headerProfileRowInner}>
-            <SymbolView
-              name={{ ios: 'person', android: 'person', web: 'person' }}
-              size={18}
-              tintColor={theme.primary}
-            />
-            <Text style={[styles.headerUserName, { color: theme.text }]} numberOfLines={1}>
-              {userName || 'Ian B.'}
-            </Text>
-          </View>
-        </View>
-      </View>
+        }
+      />
 
       <ScrollView
         contentContainerStyle={[styles.scrollContent, { paddingBottom: BottomTabInset + Spacing.four }]}

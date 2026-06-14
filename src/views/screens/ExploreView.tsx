@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import { Spacing, BottomTabInset } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import { GlassCard } from '../components/glass-card';
+import { BrandHeader } from '../components/brand-header';
 import { Plant } from '../../models/PlantModel';
 
 interface ExploreViewProps {
@@ -18,7 +19,6 @@ interface ExploreViewProps {
   onFilterSelect: (category: string) => void;
   onResetFilters: () => void;
   onToggleWishlist: (plant: Plant) => void;
-  userName?: string;
 }
 
 /**
@@ -35,39 +35,13 @@ export function ExploreView({
   onFilterSelect,
   onResetFilters,
   onToggleWishlist,
-  userName,
 }: ExploreViewProps) {
   const { theme } = useAuth();
   const router = useRouter();
 
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
-      {/* Locked Premium Top Header Bar */}
-      <View style={[styles.brandHeaderBar, { backgroundColor: theme.background, borderBottomColor: theme.cardBorder }]}>
-        {/* Left Side: Brand Logo & Title */}
-        <View style={styles.brandLeftCol}>
-          <Image
-            source={require('../../../assets/images/logo-glow.png')}
-            style={styles.brandLogo}
-            contentFit="contain"
-          />
-          <Text style={[styles.brandTitleText, { color: theme.text }]}>
-            NUBBLY<Text style={{ color: theme.primary, fontWeight: '400' }}>PLANT</Text>
-          </Text>
-        </View>
-
-        {/* Right Side: Account Profile Details */}
-        <View style={styles.headerProfileRow}>
-          <SymbolView
-            name={{ ios: 'person', android: 'person' }}
-            size={18}
-            tintColor={theme.primary}
-          />
-          <Text style={[styles.headerUserName, { color: theme.text }]} numberOfLines={1}>
-            {userName || 'Ian B.'}
-          </Text>
-        </View>
-      </View>
+      <BrandHeader />
 
       {/* Search Header Banner */}
       <View style={styles.searchHeader}>

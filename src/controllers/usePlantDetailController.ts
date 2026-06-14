@@ -118,11 +118,11 @@ export function usePlantDetailController(plantId: string) {
       const permanentUri = await FileSystemService.savePhotoPermanently(staticPlant.photoUri, uniqueId);
 
       const newGardenItem: GardenItem = {
-        id: uniqueId,
         customName: name,
         dateAdded: nowStr,
         lastWatered: nowStr,
         ...staticPlant,
+        id: uniqueId,
         photoUri: permanentUri,
         discoveryLocation: gpsLocation ? {
           latitude: gpsLocation.latitude,

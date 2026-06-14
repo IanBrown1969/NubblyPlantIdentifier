@@ -1,6 +1,5 @@
 import React from 'react';
 import { useExploreController } from '../../controllers/useExploreController';
-import { useAuth } from '../../context/AuthContext';
 import { ExploreView } from '../../views/screens/ExploreView';
 
 /**
@@ -9,7 +8,6 @@ import { ExploreView } from '../../views/screens/ExploreView';
  */
 export default function ExploreRoute() {
   const controller = useExploreController();
-  const { userName } = useAuth();
 
   return (
     <ExploreView
@@ -22,7 +20,6 @@ export default function ExploreRoute() {
       onFilterSelect={controller.onFilterSelect}
       onResetFilters={controller.onResetFilters}
       onToggleWishlist={controller.onToggleWishlist}
-      userName={userName}
     />
   );
 }

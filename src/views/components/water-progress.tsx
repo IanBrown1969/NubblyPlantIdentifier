@@ -16,9 +16,9 @@ export function WaterProgress({ percentage, isOverdue, size = 160 }: WaterProgre
   const { theme, themeMode } = useAuth();
 
   // Dynamic color threshold mapping
-  let activeColor = theme.success; // Emerald Green
-  let statusText = 'Hydrated';
-  let glowColor = 'rgba(16, 185, 129, 0.2)';
+  let activeColor: string = theme.success;
+  let statusText: string = 'Hydrated';
+  let glowColor: string = 'rgba(16, 185, 129, 0.2)';
 
   if (isOverdue || percentage <= 25) {
     activeColor = theme.danger; // Coral Red

@@ -1,3 +1,4 @@
+import axios, { AxiosError } from 'axios';
 import { Plant } from '../models/PlantModel';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
@@ -115,64 +116,51 @@ export const ClaudeService = {
 
     try {
       console.log('[ClaudeService] Live-validating Anthropic API Key...');
-      const response = await fetch(ANTHROPIC_API_URL, {
-        method: 'POST',
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': ANTHROPIC_VERSION,
-          'content-type': 'application/json',
-          'dangerously-allow-browser': 'true',
-        },
-        body: JSON.stringify({
-          model: CLAUDE_MODEL, // Use the universally supported Sonnet production model for key validation
-          max_tokens: 1,
-          messages: [
-            {
-              role: 'user',
-              content: 'ping',
-            },
-          ],
-        }),
-      });
-
-      if (response.status === 401) {
-        return { success: false, error: 'Invalid API Key (Unauthorized)' };
-      }
-
-      if (response.status === 400) {
-        // Bad request is typical if visual inputs or missing fields are wrong, but it means authorization was successful!
-        const data = await response.json().catch(() => ({}));
-        if (data?.error?.type === 'authentication_error') {
-          return { success: false, error: 'Authentication Failed: Invalid API Key' };
+      await axios.post(
+        ANTHROPIC_API_URL,
+        { model: CLAUDE_MODEL, max_tokens: 1, messages: [{ role: 'user', content: 'ping' }] },
+        {
+          headers: {
+            'x-api-key': apiKey,
+            'anthropic-version': ANTHROPIC_VERSION,
+            'content-type': 'application/json',
+            'dangerously-allow-browser': 'true',
+          },
         }
-        if (data?.error?.type === 'invalid_request_error' && data?.error?.message?.includes('API key')) {
-          return { success: false, error: data.error.message };
-        }
-        return { success: true };
-      }
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        const errMsg = errData?.error?.message || response.statusText || 'Unknown validation error';
-        if (response.status === 403) {
-          return { success: false, error: `Key Valid, but Forbidden: ${errMsg}` };
-        }
-        return { success: false, error: `Validation Failed (${response.status}): ${errMsg}` };
-      }
-
+      );
       return { success: true };
-    } catch (e: any) {
-      console.warn('[ClaudeService] Key validation network/CORS error:', e);
-      // Fall back to local structural format checking if a network or CORS block occurs on client devices.
-      // This prevents CORS and local fetch blocks from locking mobile users out of saving their keys.
+    } catch (e: unknown) {
+      const axiosErr = e as AxiosError<any>;
+      if (axiosErr.response) {
+        const { status, data } = axiosErr.response;
+        if (status === 401) {
+          return { success: false, error: 'Invalid API Key (Unauthorized)' };
+        }
+        if (status === 400) {
+          // Bad request means auth passed but request was malformed — key is valid
+          if (data?.error?.type === 'authentication_error') {
+            return { success: false, error: 'Authentication Failed: Invalid API Key' };
+          }
+          if (data?.error?.type === 'invalid_request_error' && data?.error?.message?.includes('API key')) {
+            return { success: false, error: data.error.message };
+          }
+          return { success: true };
+        }
+        if (status === 403) {
+          return { success: false, error: `Key Valid, but Forbidden: ${data?.error?.message || ''}` };
+        }
+        return { success: false, error: `Validation Failed (${status}): ${data?.error?.message || axiosErr.message}` };
+      }
+      // Network / CORS failure — fall back to structural key format check
+      console.warn('[ClaudeService] Key validation network/CORS error:', axiosErr.message);
       const trimmedKey = apiKey.trim();
       if (trimmedKey.startsWith('sk-ant-') && trimmedKey.length >= 40) {
-        console.log('[ClaudeService] Network/CORS check failed but key format is structurally valid. Bypassing check.');
+        console.log('[ClaudeService] Network check failed but key format is structurally valid. Bypassing.');
         return { success: true };
       }
-      return { 
-        success: false, 
-        error: 'Network connection failed. Please ensure your device has internet access and your key format (starting with sk-ant-) is correct.' 
+      return {
+        success: false,
+        error: 'Network connection failed. Ensure internet access and that your key starts with sk-ant-.',
       };
     }
   },
@@ -202,27 +190,16 @@ export const ClaudeService = {
 
     try {
       console.log('[ClaudeService] Initiating visual API request to Anthropic Claude...');
-      
+
       // Clean and sanitize base64 string, stripping any data URI prefix if present
       let cleanedBase64 = base64Image;
       if (base64Image.includes(';base64,')) {
         cleanedBase64 = base64Image.split(';base64,')[1];
       }
 
-      // Configure a strict 30-second network abort timeout to prevent network sockets from hanging indefinitely
-      const abortController = new AbortController();
-      const networkTimeoutId = setTimeout(() => abortController.abort(), 30000);
-
-      const response = await fetch(ANTHROPIC_API_URL, {
-        method: 'POST',
-        signal: abortController.signal,
-        headers: {
-          'x-api-key': apiKey,
-          'anthropic-version': ANTHROPIC_VERSION,
-          'content-type': 'application/json',
-          'dangerously-allow-browser': 'true', // Native React Native fetch is sandbox secure
-        },
-        body: JSON.stringify({
+      const { data: payload } = await axios.post(
+        ANTHROPIC_API_URL,
+        {
           model: CLAUDE_MODEL,
           max_tokens: 4096,
           system: mode === 'diagnosis' ? DIAGNOSTIC_SYSTEM_PROMPT : SYSTEM_PROMPT,
@@ -232,11 +209,7 @@ export const ClaudeService = {
               content: [
                 {
                   type: 'image',
-                  source: {
-                    type: 'base64',
-                    media_type: mimeType,
-                    data: cleanedBase64,
-                  },
+                  source: { type: 'base64', media_type: mimeType, data: cleanedBase64 },
                 },
                 {
                   type: 'text',
@@ -247,18 +220,18 @@ export const ClaudeService = {
               ],
             },
           ],
-        }),
-      });
+        },
+        {
+          headers: {
+            'x-api-key': apiKey,
+            'anthropic-version': ANTHROPIC_VERSION,
+            'content-type': 'application/json',
+            'dangerously-allow-browser': 'true',
+          },
+          timeout: 30000, // 30-second timeout — replaces manual AbortController
+        }
+      );
 
-      clearTimeout(networkTimeoutId);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('[ClaudeService] Anthropic API responded with error:', errorText);
-        throw new Error(`Anthropic Claude API Error: ${response.status} - ${errorText || response.statusText}`);
-      }
-
-      const payload = await response.json();
       const rawText = payload.content[0]?.text;
       
       if (!rawText) {
@@ -293,9 +266,15 @@ export const ClaudeService = {
           ]
         }
       };
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
+    } catch (error: unknown) {
+      const axiosErr = error as AxiosError<any>;
+      if (axiosErr.code === 'ECONNABORTED' || axiosErr.message?.includes('timeout')) {
         throw new Error('Uploading the base64 image timed out. Please ensure you have a strong, stable internet connection and try again.');
+      }
+      if (axiosErr.response) {
+        const errMsg = axiosErr.response.data?.error?.message || axiosErr.message;
+        console.error('[ClaudeService] Anthropic API error:', errMsg);
+        throw new Error(`Anthropic Claude API Error: ${axiosErr.response.status} - ${errMsg}`);
       }
       console.error('[ClaudeService] Error during visual identification:', error);
       throw error;

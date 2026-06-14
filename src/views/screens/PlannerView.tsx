@@ -91,7 +91,7 @@ export function PlannerView({
                   // Assess neighboring compatibility
                   const compatibility = cell ? getCellCompatibility(r, c, plantName) : 'neutral';
                   
-                  let borderGlowColor = theme.cardBorder;
+                  let borderGlowColor: string = theme.cardBorder;
                   if (isSelected) borderGlowColor = theme.primary;
                   else if (compatibility === 'companion') borderGlowColor = theme.success;
                   else if (compatibility === 'antagonist') borderGlowColor = theme.danger;
@@ -194,7 +194,7 @@ export function PlannerView({
                 const comp = getCellCompatibility(selectedCell.row, selectedCell.col, plant.name);
                 
                 let compLabel = '';
-                let compColor = theme.textSecondary;
+                let compColor: string = theme.textSecondary;
                 if (comp === 'companion') {
                   compLabel = ' (Beneficial Companion!)';
                   compColor = theme.success;

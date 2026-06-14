@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHomeController } from '../../controllers/useHomeController';
-import { useAuth } from '../../context/AuthContext';
 import { HomeView } from '../../views/screens/HomeView';
 
 /**
@@ -9,7 +8,6 @@ import { HomeView } from '../../views/screens/HomeView';
  */
 export default function HomeRoute() {
   const controller = useHomeController();
-  const { userName } = useAuth();
 
   return (
     <HomeView
@@ -27,7 +25,6 @@ export default function HomeRoute() {
       onMoveWidgetUp={controller.onMoveWidgetUp}
       onMoveWidgetDown={controller.onMoveWidgetDown}
       onToggleEditWidgetsMode={controller.onToggleEditWidgetsMode}
-      userName={userName}
     />
   );
 }

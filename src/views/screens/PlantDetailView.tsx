@@ -478,8 +478,8 @@ export function PlantDetailView({
             <SymbolView
               name={{
                 ios: expandedSection === 'care' ? 'chevron.up' : 'chevron.down',
-                android: expandedSection === 'care' ? 'chevron_up' : 'chevron_down',
-                web: expandedSection === 'care' ? 'chevron_up' : 'chevron_down',
+                android: expandedSection === 'care' ? 'expand_less' : 'expand_more',
+                web: expandedSection === 'care' ? 'expand_less' : 'expand_more',
               }}
               size={12}
               tintColor={theme.text}
@@ -505,8 +505,8 @@ export function PlantDetailView({
             <SymbolView
               name={{
                 ios: expandedSection === 'soil' ? 'chevron.up' : 'chevron.down',
-                android: expandedSection === 'soil' ? 'chevron_up' : 'chevron_down',
-                web: expandedSection === 'soil' ? 'chevron_up' : 'chevron_down',
+                android: expandedSection === 'soil' ? 'expand_less' : 'expand_more',
+                web: expandedSection === 'soil' ? 'expand_less' : 'expand_more',
               }}
               size={12}
               tintColor={theme.text}
@@ -532,8 +532,8 @@ export function PlantDetailView({
             <SymbolView
               name={{
                 ios: expandedSection === 'troubleshoot' ? 'chevron.up' : 'chevron.down',
-                android: expandedSection === 'troubleshoot' ? 'chevron_up' : 'chevron_down',
-                web: expandedSection === 'troubleshoot' ? 'chevron_up' : 'chevron_down',
+                android: expandedSection === 'troubleshoot' ? 'expand_less' : 'expand_more',
+                web: expandedSection === 'troubleshoot' ? 'expand_less' : 'expand_more',
               }}
               size={12}
               tintColor={theme.text}

@@ -17,7 +17,7 @@ interface AuthContextType {
   authError: string | null;
   userName: string;
   themeMode: 'light' | 'dark';
-  theme: typeof Colors.dark;
+  theme: typeof Colors.dark | typeof Colors.light;
   loginWithBiometrics: () => Promise<boolean>;
   loginWithGoogle: () => Promise<boolean>;
   logout: () => Promise<void>;

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useScanController } from '../../controllers/useScanController';
 import { useAuthController } from '../../controllers/useAuthController';
-import { useAuth } from '../../context/AuthContext';
 import { ScanView } from '../../views/screens/ScanView';
 import { PaywallView } from '../../views/screens/PaywallView';
 
@@ -12,7 +11,6 @@ import { PaywallView } from '../../views/screens/PaywallView';
 export default function ScanRoute() {
   const controller = useScanController();
   const authController = useAuthController();
-  const { userName } = useAuth();
 
   return (
     <>
@@ -31,7 +29,6 @@ export default function ScanRoute() {
         onTriggerSimulatedScan={controller.onTriggerSimulatedScan}
         onResetScanner={controller.onResetScanner}
         onDismissPaywall={controller.onDismissPaywall}
-        userName={userName}
       />
 
       {/* Slide-up frosted glassmorphic Paywall overlay if access is locked */}
