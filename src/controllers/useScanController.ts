@@ -55,8 +55,8 @@ export function useScanController() {
       }
 
       // Fetch GPS coordinates and launch visual Claude AI plant analysis in parallel to bypass sequential waits!
-      updateTelemetry('Acquiring discovery location & analyzing foliage visual taxonomy...', 0.30);
-      setStatus('uploading');
+      updateTelemetry('Acquiring GPS discovery coordinates...', 0.25);
+      setStatus('gps');
 
       // Dynamically resolve image MIME type from file extension to satisfy Anthropic image headers
       let ext = 'jpeg';
@@ -70,14 +70,21 @@ export function useScanController() {
       }
       const resolvedMime = ext === 'png' ? 'image/png' : ext === 'webp' ? 'image/webp' : ext === 'gif' ? 'image/gif' : 'image/jpeg';
 
+      updateTelemetry('Transmitting visual payload to Claude AI...', 0.40);
+      setStatus('uploading');
+
       const [location, claudeProfile] = await Promise.all([
         LocationService.getCurrentLocation(),
-        ClaudeService.identifyPlant(
-          resolvedBase64 || '',
-          resolvedMime,
-          claudeApiKey,
-          scanMode
-        )
+        (async () => {
+          updateTelemetry('Claude AI is analyzing foliage taxonomy...', 0.55);
+          setStatus('analyzing');
+          return ClaudeService.identifyPlant(
+            resolvedBase64 || '',
+            resolvedMime,
+            claudeApiKey,
+            scanMode
+          );
+        })(),
       ]);
       const placeName = location?.placeName || 'Unknown Location';
 

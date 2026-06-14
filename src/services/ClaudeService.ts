@@ -2,7 +2,7 @@ import { Plant } from '../models/PlantModel';
 
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 const ANTHROPIC_VERSION = '2023-06-01';
-const CLAUDE_MODEL = 'claude-sonnet-4-6'; // Modern flagship production model for standard usage
+const CLAUDE_MODEL = 'claude-sonnet-4-6'; // Current stable Sonnet — supports vision inputs
 
 // High-fidelity structured system prompt instructing Claude to return clean JSON
 const SYSTEM_PROMPT = `You are a professional master botanist and plant doctor. Your task is to identify the plant shown in the image and provide a highly detailed care sheet and troubleshooting guide.
@@ -50,9 +50,9 @@ You must respond with a SINGLE, RAW, VALID JSON object. Do not output any chat p
   "sunlight": "Short description of sunlight requirements",
   "temperature": "Ideal temperature ranges, e.g., 18°C - 24°C",
   "isPetSafe": true,
-  "healthStatus": "Diseased", // STRICTLY either "Healthy" or "Diseased"
+  "healthStatus": "Diseased",
   "diagnosedIssue": "Specific disease/pest name (e.g., Powdery Mildew, Spider Mites, Nitrogen Deficiency, Root Rot)",
-  "confidencePct": 92, // Integer confidence percentage
+  "confidencePct": 92,
   "symptomDescription": "Detailed analysis of leaf spots, margins, yellowing, or insect clusters seen in the visual image.",
   "organicTreatment": "3-step organic remedy plan to cure and heal the plant.",
   "careGuide": {
@@ -224,7 +224,7 @@ export const ClaudeService = {
         },
         body: JSON.stringify({
           model: CLAUDE_MODEL,
-          max_tokens: 2000,
+          max_tokens: 4096,
           system: mode === 'diagnosis' ? DIAGNOSTIC_SYSTEM_PROMPT : SYSTEM_PROMPT,
           messages: [
             {
