@@ -43,7 +43,16 @@ export const LocationService = {
         )
       ]).catch(async (err) => {
         console.log('[LocationService] Active GPS lock timed out or failed. Fetching last known location...', err);
-        const lastKnown = await Location.getLastKnownPositionAsync();
+        // Race getLastKnownPositionAsync with a 2-second timeout to guarantee we never hang
+        const lastKnown = await Promise.race([
+          Location.getLastKnownPositionAsync(),
+          new Promise<null>((resolve) => 
+            setTimeout(() => {
+              console.log('[LocationService] Last known location query timed out.');
+              resolve(null);
+            }, 2000)
+          )
+        ]);
         if (!lastKnown) {
           throw new Error('No GPS coordinates or last known location available.');
         }

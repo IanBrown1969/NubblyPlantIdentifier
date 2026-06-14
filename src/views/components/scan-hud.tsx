@@ -69,18 +69,17 @@ export function ScanHUD({ telemetryMessage, progress, isActive, imageUri }: Scan
   if (!isActive) return null;
 
   return (
-    <View style={StyleSheet.absoluteFillObject} pointerEvents="none">
+    <View style={StyleSheet.absoluteFill} pointerEvents="none">
       {/* Ambient Blurred Background of the processing image */}
       {imageUri && (
-        <View style={StyleSheet.absoluteFillObject}>
+        <View style={StyleSheet.absoluteFill}>
           <Image
             source={{ uri: imageUri }}
-            style={StyleSheet.absoluteFillObject}
+            style={[StyleSheet.absoluteFill, { opacity: 0.35 }]}
             blurRadius={20}
             contentFit="cover"
-            opacity={0.35}
           />
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'rgba(7, 12, 9, 0.4)' }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: 'rgba(7, 12, 9, 0.4)' }]} />
         </View>
       )}
 
@@ -89,9 +88,8 @@ export function ScanHUD({ telemetryMessage, progress, isActive, imageUri }: Scan
         {imageUri && (
           <Image
             source={{ uri: imageUri }}
-            style={StyleSheet.absoluteFillObject}
+            style={[StyleSheet.absoluteFill, { opacity: 0.7 }]}
             contentFit="cover"
-            opacity={0.7}
           />
         )}
         <View style={[styles.corner, styles.topLeft, { borderColor: theme.primary }]} />

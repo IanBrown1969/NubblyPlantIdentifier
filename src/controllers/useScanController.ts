@@ -48,6 +48,12 @@ export function useScanController() {
     setScanError(null);
     setSelectedImageUri(imageUri);
     try {
+      let resolvedBase64 = base64Data;
+      if (!resolvedBase64) {
+        updateTelemetry('Reading local phone storage image data...', 0.15);
+        resolvedBase64 = await FileSystemService.readUriAsBase64(imageUri);
+      }
+
       // Fetch GPS coordinates and launch visual Claude AI plant analysis in parallel to bypass sequential waits!
       updateTelemetry('Acquiring discovery location & analyzing foliage visual taxonomy...', 0.30);
       setStatus('uploading');
@@ -67,7 +73,7 @@ export function useScanController() {
       const [location, claudeProfile] = await Promise.all([
         LocationService.getCurrentLocation(),
         ClaudeService.identifyPlant(
-          base64Data || '',
+          resolvedBase64 || '',
           resolvedMime,
           claudeApiKey,
           scanMode

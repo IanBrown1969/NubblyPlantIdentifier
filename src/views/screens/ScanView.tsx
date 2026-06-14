@@ -65,14 +65,13 @@ export function ScanView({
 
       {/* Full-Screen Glassmorphic Loading Progress Overlay */}
       {isScanningActive && (
-        <View style={[StyleSheet.absoluteFillObject, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(7, 12, 9, 0.4)' }]}>
+        <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(7, 12, 9, 0.4)' }]}>
           {selectedImageUri && (
             <Image
               source={{ uri: selectedImageUri }}
-              style={StyleSheet.absoluteFillObject}
+              style={[StyleSheet.absoluteFill, { opacity: 0.25 }]}
               blurRadius={30}
               contentFit="cover"
-              opacity={0.25}
             />
           )}
           

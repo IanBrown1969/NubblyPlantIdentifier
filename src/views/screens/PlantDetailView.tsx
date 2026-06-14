@@ -590,7 +590,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   imageOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     backgroundColor: 'rgba(11, 14, 12, 0.45)', // Custom bottom gradient fade
   },
   backBtn: {

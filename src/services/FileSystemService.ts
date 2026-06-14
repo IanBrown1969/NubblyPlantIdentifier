@@ -1,4 +1,4 @@
-import { documentDirectory, getInfoAsync, makeDirectoryAsync, copyAsync, deleteAsync } from 'expo-file-system';
+import { documentDirectory, getInfoAsync, makeDirectoryAsync, copyAsync, deleteAsync, readAsStringAsync, EncodingType } from 'expo-file-system/legacy';
 import { Platform } from 'react-native';
 
 const GARDEN_ASSETS_DIR = `${documentDirectory}garden/`;
@@ -56,6 +56,25 @@ export const FileSystemService = {
     } catch {
       console.error('[FileSystem] Failed to save photo permanently, falling back to temp URI:');
       return tempUri;
+    }
+  },
+
+  /**
+   * Reads a local URI (file:// or content://) and returns its base64 string representation.
+   */
+  async readUriAsBase64(uri: string): Promise<string> {
+    if (Platform.OS === 'web' || uri.startsWith('http') || uri.startsWith('data:')) {
+      return '';
+    }
+    try {
+      console.log('[FileSystem] Reading URI as base64:', uri);
+      const base64 = await readAsStringAsync(uri, {
+        encoding: EncodingType.Base64,
+      });
+      return base64;
+    } catch (err) {
+      console.error('[FileSystem] Failed to read URI as base64:', err);
+      return '';
     }
   },
 
